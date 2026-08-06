@@ -1,0 +1,19 @@
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+# Chipathon 2026: Project configuration
+# LICENSE: Apache License Version 2.0
+# http://www.apache.org/licenses/
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+
+# data will be pulled from main branch of the repo.
+# please be sure that the main branch contains the data you want to submit.
+# This file will be updated with more information later
+
+# ======================================================
+# Project metadata (used for documentation / review)
+# ======================================================
+project:
+  title: "PRESENT-80 Lightweight Block Cipher"   # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  team: "SystemsGenesys"                       # Your Team name
+  discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
+  description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
+  lvs_config: "PRESENT80_CYPHER_POC/lvs/present80/lvs_config.json"
