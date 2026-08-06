@@ -1,0 +1,63 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.mod_present80.lvs",
+  "version": 1,
+  "kind": "lvs",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:ab9d6006fb8b5fc63df6a760f9ab89205a7204710d6646fab45ada7342116d4d",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": "signoff_specialist",
+    "tool": {
+      "name": "netgen",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.netlist",
+        "version": 1,
+        "kind": "netlist",
+        "content_hash": "sha256:f37108b04bccdc6e5e137e95e74ce1ff44e4fa2da31b89244338131b5914446a"
+      },
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.layout",
+        "version": 1,
+        "kind": "layout",
+        "content_hash": "sha256:26060ae7c48a788a18fd30d4dc86fbc48a706665aa635a659c242c00fdb918fa"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:52:23.651091Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "netgen",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "errors": 0.0,
+    "lvs_mismatches": 0.0,
+    "matched": 1.0,
+    "violations": 0.0
+  },
+  "violations": [],
+  "matched": true,
+  "mismatch_count": 0,
+  "netgen_log": {
+    "path": "3a/3a44021bbbaf83708ad2a001311ee4e892488c56d9604cc0f849263b5bb1b6bb",
+    "sha256": "3a44021bbbaf83708ad2a001311ee4e892488c56d9604cc0f849263b5bb1b6bb",
+    "size_bytes": 135456,
+    "media_type": "text/plain"
+  },
+  "gate_ok": true
+}

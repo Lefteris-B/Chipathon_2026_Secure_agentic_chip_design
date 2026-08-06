@@ -1,0 +1,57 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.mod_present80.timing",
+  "version": 1,
+  "kind": "sta",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:ba044a4b255120fedca1ee62e5c7b1691ebe41234ca5bd50de5cf99e44e81629",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": "signoff_specialist",
+    "tool": {
+      "name": "opensta",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.netlist",
+        "version": 1,
+        "kind": "netlist",
+        "content_hash": "sha256:f37108b04bccdc6e5e137e95e74ce1ff44e4fa2da31b89244338131b5914446a"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:52:22.352189Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "opensta",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "errors": 0.0,
+    "hold_violations": 0.0,
+    "sdf_used": 1.0,
+    "setup_violations": 0.0,
+    "tns_ns": 0.0,
+    "used_mapped_netlist": 1.0,
+    "violations": 0.0,
+    "wns_ns": 0.0
+  },
+  "violations": [],
+  "wns_ns": null,
+  "tns_ns": null,
+  "setup_violations": 0,
+  "hold_violations": 0,
+  "gate_ok": true
+}

@@ -1,0 +1,46 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.mod_present80.gds",
+  "version": 1,
+  "kind": "gdsii",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:63b323d95a2fc4b2d96ec7fe0b9de2d407bba2b49c4c9e453e7d4eb87620b401",
+  "status": "accepted",
+  "provenance": {
+    "produced_by": "gdsii",
+    "agent": "gdsii_specialist",
+    "tool": {
+      "name": "magic",
+      "version": "bundled",
+      "container_digest": null
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.layout",
+        "version": 1,
+        "kind": "layout",
+        "content_hash": "sha256:26060ae7c48a788a18fd30d4dc86fbc48a706665aa635a659c242c00fdb918fa"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:58:28.802540Z",
+  "metadata": {
+    "cells_written": 1,
+    "stage_reached": "routed"
+  },
+  "gds": {
+    "path": "b7/b77766ed0fce5ed174e10b192e7e7d8f2a2b06a73d280221a7036c204a3fd4f2",
+    "sha256": "b77766ed0fce5ed174e10b192e7e7d8f2a2b06a73d280221a7036c204a3fd4f2",
+    "size_bytes": 26,
+    "media_type": "application/octet-stream; format=gdsii"
+  },
+  "die_area_um2": 136942.0,
+  "cell_count": 6066
+}

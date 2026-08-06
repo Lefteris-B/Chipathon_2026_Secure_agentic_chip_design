@@ -1,0 +1,100 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.plan",
+  "version": 1,
+  "kind": "plan",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": null,
+  "content_hash": "sha256:3ac4ee8e9150ca50ebf8c68ce739bac39485119a1b668d635027c8cdb419dc57",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "plan",
+    "agent": "planner",
+    "tool": null,
+    "model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "temperature": 0.0,
+      "top_p": null,
+      "seed": null,
+      "prompt_tokens": 2537,
+      "completion_tokens": 545,
+      "cost_usd": null
+    },
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:8c962367d5fab0de4049aee291dbceab1d96458c28719dbd0460c9b3dba0af8e"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:45:16.516002Z",
+  "metadata": {},
+  "top_module_id": "mod_present80",
+  "modules": [
+    {
+      "module_id": "mod_present80",
+      "name": "present80",
+      "description": "PRESENT-80 block cipher encryption core; iterative, one round per clock, 32-cycle latency from start to done",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "in",
+          "width": 1,
+          "description": "Primary clock, 100 MHz"
+        },
+        {
+          "name": "rst_n",
+          "direction": "in",
+          "width": 1,
+          "description": "Asynchronous active-low reset, synchronous release"
+        },
+        {
+          "name": "start",
+          "direction": "in",
+          "width": 1,
+          "description": "Single-cycle pulse: latches plaintext and key, begins encryption"
+        },
+        {
+          "name": "plaintext",
+          "direction": "in",
+          "width": 64,
+          "description": "64-bit plaintext block to encrypt"
+        },
+        {
+          "name": "key",
+          "direction": "in",
+          "width": 80,
+          "description": "80-bit encryption key"
+        },
+        {
+          "name": "ciphertext",
+          "direction": "out",
+          "width": 64,
+          "description": "64-bit ciphertext; valid when done is high"
+        },
+        {
+          "name": "done",
+          "direction": "out",
+          "width": 1,
+          "description": "Asserted for exactly one cycle when ciphertext is valid"
+        }
+      ],
+      "params": {
+        "BLOCK_WIDTH": 64,
+        "CLK_PERIOD_NS": 10,
+        "KEY_WIDTH": 80,
+        "ROUNDS": 31
+      },
+      "depends_on": []
+    }
+  ],
+  "rationale": "Spec mandates a single flat Verilog module with no sub-modules. The design contains an FSM (IDLE, ROUND, DONE states), a 64-bit state register, an 80-bit key register, a 5-bit round counter, combinational addRoundKey/sBoxLayer/pLayer datapaths, and a combinational key-schedule update, all clocked on the single clk domain with asynchronous-assert/synchronous-release rst_n."
+}

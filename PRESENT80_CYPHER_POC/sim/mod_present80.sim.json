@@ -1,0 +1,64 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.mod_present80.sim",
+  "version": 1,
+  "kind": "sim",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:e207e4aca11f4f10ce3f6dcabec0f8e4b77739290a75b6dba19f9ba624ffa6f2",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "rtl",
+    "agent": "rtl_specialist",
+    "tool": {
+      "name": "cocotb+verilator",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.rtl",
+        "version": 1,
+        "kind": "rtl",
+        "content_hash": "sha256:5fc635de1f00ba949333e305b2b9715ee05fe3aa43e002aad271960e46c8aad0"
+      },
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.tb",
+        "version": 1,
+        "kind": "testbench",
+        "content_hash": "sha256:eec9335c257567d4614c6fd7cf94bf66c847f86c1909291be71f868a3e2cd8f9"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": 0,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:49:44.401781Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "cocotb+verilator",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "duration_s": 8.702814842999942,
+    "tests_passed": 1.0,
+    "tests_total": 1.0
+  },
+  "violations": [],
+  "tests_total": 1,
+  "tests_passed": 1,
+  "coverage_pct": null,
+  "waveform": {
+    "path": "cc/cca1aee0865c50b23470dd866bc24081ac83ae703f631edae23921c7617f5af3",
+    "sha256": "cca1aee0865c50b23470dd866bc24081ac83ae703f631edae23921c7617f5af3",
+    "size_bytes": 13986,
+    "media_type": "application/vcd"
+  },
+  "failing_assertions": [],
+  "gate_ok": true
+}

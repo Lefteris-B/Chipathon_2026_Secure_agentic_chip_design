@@ -1,0 +1,61 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.mod_present80.tb",
+  "version": 1,
+  "kind": "testbench",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:eec9335c257567d4614c6fd7cf94bf66c847f86c1909291be71f868a3e2cd8f9",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "rtl",
+    "agent": "differential_tb_builder",
+    "tool": {
+      "name": "differential_tb",
+      "version": "f19.8",
+      "container_digest": null
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.oracle",
+        "version": 1,
+        "kind": "oracle",
+        "content_hash": "sha256:d884da3f44e6a1fc09bdce8f12818d814e59a2784b1cdba277c12322a80fe200"
+      },
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.mod_present80.assertions",
+        "version": 1,
+        "kind": "assertions",
+        "content_hash": "sha256:03d717107272d189a6a008ac59c2318f8c12f5ab4407babfd29513325b54dba0"
+      },
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.plan",
+        "version": 1,
+        "kind": "plan",
+        "content_hash": "sha256:3ac4ee8e9150ca50ebf8c68ce739bac39485119a1b668d635027c8cdb419dc57"
+      },
+      {
+        "artifact_id": "present80-20260806T104436-22ed28.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:8c962367d5fab0de4049aee291dbceab1d96458c28719dbd0460c9b3dba0af8e"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:49:05.497954Z",
+  "metadata": {},
+  "source": {
+    "path": "51/51ad3a995d1ddca034d0fa5ea32b92bc08d9cc822f50021ae89e35130ee04052",
+    "sha256": "51ad3a995d1ddca034d0fa5ea32b92bc08d9cc822f50021ae89e35130ee04052",
+    "size_bytes": 5194,
+    "media_type": "text/x-python"
+  },
+  "framework": "cocotb",
+  "target_module": "present80"
+}

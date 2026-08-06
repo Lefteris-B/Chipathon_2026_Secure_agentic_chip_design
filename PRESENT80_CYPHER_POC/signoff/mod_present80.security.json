@@ -1,0 +1,33 @@
+{
+  "artifact_id": "present80-20260806T104436-22ed28.present80.security",
+  "version": 1,
+  "kind": "security",
+  "design_id": "present80-20260806T104436-22ed28",
+  "module_id": "present80",
+  "content_hash": "sha256:f6ac65f9a07ac371bd5e72506409c9cb3561bd3a83cfb44dba9f25af216243f0",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": null,
+    "tool": null,
+    "model": null,
+    "inputs": [],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-06T10:45:16.540656Z",
+  "metadata": {},
+  "passed": true,
+  "checker": null,
+  "metrics": {
+    "errors": 0.0
+  },
+  "violations": [],
+  "checks_run": [],
+  "suspicious_structures": 0,
+  "gate_ok": true
+}
