@@ -2,12 +2,13 @@
 ## Agentic Flow for Open-Source IC Design
 ### IEEE SSCS PICO Open-Source Chipathon 2026 · Track D (AI / LLM-assisted Circuits)
 
+[![Build installers](https://github.com/Lefteris-B/Chipathon_2026_Secure_agentic_chip_design/actions/workflows/release.yml/badge.svg)](https://github.com/Lefteris-B/Chipathon_2026_Secure_agentic_chip_design/actions/workflows/release.yml)
+
 <p align="center">
   <img alt="Chipathon 2026" src="https://img.shields.io/badge/IEEE%20SSCS%20PICO-Chipathon%202026-1f6feb">
   <img alt="Track D" src="https://img.shields.io/badge/Track%20D-AI%20%2F%20LLM--assisted%20Circuits-8957e5">
   <img alt="Team" src="https://img.shields.io/badge/team-SystemsGenesys-0a7ea4">
   <img alt="PDK" src="https://img.shields.io/badge/PDK-gf180mcuD-2da44e">
-  [![Build installers](https://github.com/Lefteris-B/Chipathon_2026_Secure_agentic_chip_design/actions/workflows/release.yml/badge.svg)](https://github.com/Lefteris-B/Chipathon_2026_Secure_agentic_chip_design/actions/workflows/release.yml)
   <img alt="License" src="https://img.shields.io/badge/license-MIT-f1c40f">
 </p>
 <p align="center">
