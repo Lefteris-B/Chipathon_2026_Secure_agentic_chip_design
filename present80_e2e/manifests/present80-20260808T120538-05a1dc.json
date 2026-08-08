@@ -1,0 +1,171 @@
+{
+  "design_id": "present80-20260808T120538-05a1dc",
+  "root_ref": {
+    "artifact_id": "present80-20260808T120538-05a1dc.present80_top.gds",
+    "version": 1,
+    "kind": "gdsii",
+    "content_hash": "sha256:599e8f7240d621fdb84a2cc83b728d2b8e163d5058d1011932408e2fb7f5a89f"
+  },
+  "entries": [
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.spec",
+      "version": 1,
+      "kind": "spec",
+      "content_hash": "sha256:4a11248b81e92597d18b242726aa4a0520848ef9fad7e6cccb83427aac7266c0",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.plan",
+      "version": 1,
+      "kind": "plan",
+      "content_hash": "sha256:bf1d90535a524a33153774b7c64124e64e0a24a1cebb345ec6af12c66e1b2644",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.rtl",
+      "version": 1,
+      "kind": "rtl",
+      "content_hash": "sha256:d93df10ce19fc01ff014ba3434ca72bae6cfa9f4ac5a70ff60eaf2d5d98b75d1",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "anthropic",
+        "model": "claude-opus-4-8",
+        "temperature": 1.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.rtl",
+      "version": 2,
+      "kind": "rtl",
+      "content_hash": "sha256:6cc6c6c4c6feda6fbf1efa8e8280c78d1c19640693f3153a334ce629fe91e2d1",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "anthropic",
+        "model": "claude-opus-4-8",
+        "temperature": 1.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.tb",
+      "version": 1,
+      "kind": "testbench",
+      "content_hash": "sha256:11eabe25b8d3517167c7dba2f2b685847028cf9c7d10ff8a1e1c5d48cd3e8c49",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "vector_tb",
+        "version": "f-vectb.1",
+        "container_digest": null
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.sim",
+      "version": 1,
+      "kind": "sim",
+      "content_hash": "sha256:0658596e1cf5058d9362c9b5c0fcb4cf06f43ba497356f759d28231bd419463f",
+      "config_hash": null,
+      "seed": 0,
+      "tool": {
+        "name": "cocotb+verilator",
+        "version": "bundled",
+        "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.diagnosis",
+      "version": 1,
+      "kind": "diagnosis",
+      "content_hash": "sha256:46f9c41812891132c89238cfe7eb69605cf6ab8402fc09386401a84abe3331a3",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": null
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.rtl",
+      "version": 3,
+      "kind": "rtl",
+      "content_hash": "sha256:bf5841d602bbbe70412cfeaf142544310507433c40d106350055229812d4e724",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "anthropic",
+        "model": "claude-opus-4-8",
+        "temperature": 1.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.netlist",
+      "version": 1,
+      "kind": "netlist",
+      "content_hash": "sha256:0045cc921c6f99c03f80971c156fe7bc281285e362d42c4c93cbb38fac905538",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "yosys",
+        "version": "bundled",
+        "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.layout",
+      "version": 1,
+      "kind": "layout",
+      "content_hash": "sha256:f6d40001fd6765348a2a5da56f0d902d3924ef528b21f84bd476bd2f8cb0a305",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "librelane",
+        "version": "bundled",
+        "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "present80-20260808T120538-05a1dc.present80_top.gds",
+      "version": 1,
+      "kind": "gdsii",
+      "content_hash": "sha256:599e8f7240d621fdb84a2cc83b728d2b8e163d5058d1011932408e2fb7f5a89f",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "magic",
+        "version": "bundled",
+        "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+      },
+      "model": null
+    }
+  ]
+}
