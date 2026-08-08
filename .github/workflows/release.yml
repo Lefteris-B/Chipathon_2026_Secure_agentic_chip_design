@@ -1,0 +1,190 @@
+name: Build installers
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - "packaging/**"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: installers-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------------------------------------------------------------------
+  # 1. Pure-Python distributions — the `pip install` / `uv tool install` path.
+  #    Built once; hatchling output is platform-independent.
+  # ---------------------------------------------------------------------
+  wheel:
+    name: wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+
+      - name: Build distributions
+        run: uv build --sdist --wheel --out-dir dist
+
+      - name: Verify metadata
+        run: uv run --with twine twine check dist/*
+
+      - name: Smoke-test the wheel in a clean env
+        run: |
+          uv venv /tmp/verify
+          VIRTUAL_ENV=/tmp/verify uv pip install dist/*.whl
+          /tmp/verify/bin/chip-agent --help
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-python
+          path: dist/*
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------
+  # 2. Standalone bundles — no Python required on the target machine.
+  #    PyInstaller cannot cross-compile, so each target needs a native runner.
+  # ---------------------------------------------------------------------
+  bundle:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ubuntu-22.04 rather than -latest: older glibc => wider compatibility
+          - os: ubuntu-22.04
+            target: linux-x86_64
+            archive: tar.gz
+          - os: ubuntu-22.04-arm
+            target: linux-arm64
+            archive: tar.gz
+          - os: macos-13
+            target: macos-x86_64
+            archive: tar.gz
+          - os: macos-14
+            target: macos-arm64
+            archive: tar.gz
+          - os: windows-latest
+            target: windows-x86_64
+            archive: zip
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install project dependencies
+        run: uv sync --frozen --no-dev
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="0.0.0-dev.$(git rev-parse --short HEAD)"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "name=chip-agent-${VERSION}-${{ matrix.target }}" >> "$GITHUB_OUTPUT"
+
+      - name: Freeze with PyInstaller
+        run: uv run --with pyinstaller pyinstaller packaging/chip-agent.spec --noconfirm --clean
+
+      - name: Smoke-test the bundle
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            ./dist/chip-agent/chip-agent.exe --help
+          else
+            ./dist/chip-agent/chip-agent --help
+          fi
+
+      - name: Stage payload
+        run: |
+          NAME="${{ steps.version.outputs.name }}"
+          mv dist/chip-agent "dist/${NAME}"
+          for f in Readme.md README.md LICENSE LICENSE.md model_routing.md; do
+            [[ -f "$f" ]] && cp "$f" "dist/${NAME}/" || true
+          done
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp packaging/install.ps1 "dist/${NAME}/"
+          else
+            cp packaging/install.sh "dist/${NAME}/"
+            chmod +x "dist/${NAME}/install.sh"
+          fi
+
+      - name: Create archive
+        run: |
+          NAME="${{ steps.version.outputs.name }}"
+          if [[ "${{ matrix.archive }}" == "zip" ]]; then
+            (cd dist && 7z a -tzip "${NAME}.zip" "${NAME}" > /dev/null)
+          else
+            tar -C dist -czf "dist/${NAME}.tar.gz" "${NAME}"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.target }}
+          path: dist/*.${{ matrix.archive }}
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------
+  # 3. Publish. Tag pushes only — PRs stop after the build/smoke-test above.
+  # ---------------------------------------------------------------------
+  release:
+    name: Publish release
+    needs: [wheel, bundle]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: staging
+
+      - name: Flatten and checksum
+        run: |
+          mkdir -p release
+          find staging -type f -exec cp -n {} release/ \;
+          cd release
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: "release/*"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          draft: false
+          fail_on_unmatched_files: true
