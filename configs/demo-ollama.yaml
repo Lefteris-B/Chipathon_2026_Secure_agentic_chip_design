@@ -1,0 +1,72 @@
+# F11.1 demo config: hybrid frontier + local-Ollama LiteLLM routing.
+#
+# Per CLAUDE.md's stated routing policy ("local for high-volume candidate
+# sampling, frontier for planning and semantic diagnosis"), this config
+# routes RTL_GEN / RTL_REPAIR / TB_GEN to a local Qwen-Coder instance
+# served by Ollama, and SPEC_INTAKE / PLAN / DIAGNOSE to a frontier
+# model that needs an API key.
+#
+# Prerequisites:
+#
+#   * Ollama running locally on http://localhost:11434, with the
+#     ``qwen3-coder`` model pulled (override the model name below if
+#     a different coder model is preferred). ``ollama pull qwen3-coder``.
+#   * ``ANTHROPIC_API_KEY`` exported in the environment for the
+#     frontier slot. Swap providers if needed; LiteLLM handles the
+#     transport.
+#
+# Sandbox + constraints + budgets are copied from configs/demo-counter.yaml
+# so this file can drive the same end-to-end pipeline; only ``routing``
+# differs.
+
+paths:
+  runs_dir: runs
+  store_db: runs/store.sqlite
+
+constraints:
+  pdk: gf180mcuD
+  std_cell_lib: gf180mcu_fd_sc_mcu7t5v0
+  target_clock_ns: 10.0
+  target_utilization: 0.3
+
+budgets:
+  cost_budget_usd: 5.0
+  max_attempts: 3
+  max_react_steps: 6
+  global_feedback_budget: 2
+
+sandbox:
+  image: hpretl/iic-osic-tools
+  image_tag: chipathon26
+  image_digest: sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4
+  cpu_limit: 4.0
+  memory_limit_gb: 8.0
+  time_limit_s: 1800
+  command_prefix: ["--skip"]
+
+routing:
+  registry:
+    frontier:
+      provider: anthropic
+      model: claude-sonnet-4-6
+    local-coder:
+      provider: ollama
+      model: qwen3-coder:latest
+      endpoint: http://localhost:11434
+  loops:
+    inner: {model: local-coder, temperature: 0.4, n: 1}
+    outer: {model: frontier,    temperature: 0.0, n: 1}
+  tasks:
+    spec_intake: {model: frontier,    temperature: 0.0, n: 1}
+    plan:        {model: frontier,    temperature: 0.0, n: 1}
+    rtl_gen:     {model: local-coder, temperature: 0.4, n: 1}
+    rtl_repair:  {model: local-coder, temperature: 0.4, n: 1}
+    tb_gen:      {model: local-coder, temperature: 0.2, n: 1}
+    diagnose:    {model: frontier,    temperature: 0.0, n: 1}
+  # F11.5: when the local Ollama daemon is unreachable (connect timeout
+  # / refused / network), the router transparently retries against the
+  # configured fallback and records a ``BACKEND_FALLBACK`` audit event.
+  # A one-time stderr warning fires on first fallback per run. The frontier
+  # backend has no fallback — frontier errors propagate.
+  fallback:
+    local-coder: frontier

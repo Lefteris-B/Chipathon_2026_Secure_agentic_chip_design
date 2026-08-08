@@ -1,0 +1,168 @@
+# rationale: Implement PRESENT-80 block cipher reference model with serial load/unload interface
+# rationale: FSM states: IDLE, LOAD, ENCRYPT, DONE
+# rationale: Load phase: 144 cycles MSB-first into {key_reg[79:0], state[63:0]}
+# rationale: Encrypt phase: 31 full rounds + 1 final addRoundKey = 32 cycles total
+# rationale: Key schedule: 61-bit left rotate, S-box on top 4 bits, XOR round counter into bits [19:15]
+# rationale: Unload: MSB-first serial output of state[63:0] when done and shift_out_en
+
+def reference(stim: list[dict]) -> list[dict]:
+    # PRESENT S-box
+    SBOX = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD,
+            0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2]
+
+    def sbox_layer(state64):
+        result = 0
+        for i in range(16):
+            nibble = (state64 >> (i * 4)) & 0xF
+            result |= SBOX[nibble] << (i * 4)
+        return result
+
+    def player(state64):
+        result = 0
+        for i in range(63):
+            bit = (state64 >> i) & 1
+            p = (i * 16) % 63
+            result |= bit << p
+        # P(63) = 63
+        bit63 = (state64 >> 63) & 1
+        result |= bit63 << 63
+        return result
+
+    def key_schedule(key80, round_counter):
+        # 61-bit left rotate of 80-bit key
+        key80 = ((key80 << 61) | (key80 >> 19)) & 0xFFFFFFFFFFFFFFFFFFFF
+        # S-box on top 4 bits [79:76]
+        top4 = (key80 >> 76) & 0xF
+        top4_new = SBOX[top4]
+        key80 = (key80 & 0x0FFFFFFFFFFFFFFFFFFFFFFF) | (top4_new << 76)
+        # Mask to 80 bits
+        key80 &= 0xFFFFFFFFFFFFFFFFFFFF
+        # XOR round counter into bits [19:15]
+        key80 ^= (round_counter & 0x1F) << 15
+        return key80
+
+    def add_round_key(state64, key80):
+        # XOR state with key_reg[79:16] (top 64 bits of 80-bit key)
+        round_key = (key80 >> 16) & 0xFFFFFFFFFFFFFFFF
+        return state64 ^ round_key
+
+    # FSM states
+    IDLE = 0
+    LOAD = 1
+    ENCRYPT = 2
+    DONE = 3
+
+    # Internal state
+    fsm = IDLE
+    key_reg = 0
+    state = 0
+    load_counter = 0
+    round_counter = 0
+    unload_counter = 0
+    done = 0
+    dout = 0
+
+    out = []
+
+    for cyc in stim:
+        rst_n = cyc.get("rst_n", 1)
+        load_en = cyc.get("load_en", 0)
+        din = cyc.get("din", 0)
+        shift_out_en = cyc.get("shift_out_en", 0)
+
+        if rst_n == 0:
+            # Asynchronous reset
+            fsm = IDLE
+            key_reg = 0
+            state = 0
+            load_counter = 0
+            round_counter = 0
+            unload_counter = 0
+            done = 0
+            dout = 0
+        else:
+            if fsm == IDLE:
+                if load_en == 1:
+                    # Start loading
+                    fsm = LOAD
+                    load_counter = 0
+                    key_reg = 0
+                    state = 0
+                    done = 0
+                    # Shift in first bit
+                    # Combined 144-bit shift register: key_reg is top 80 bits, state is bottom 64 bits
+                    combined = (key_reg << 64) | state
+                    combined = ((combined << 1) | din) & ((1 << 144) - 1)
+                    key_reg = (combined >> 64) & 0xFFFFFFFFFFFFFFFFFFFF
+                    state = combined & 0xFFFFFFFFFFFFFFFF
+                    load_counter = 1
+                    if load_counter == 144:
+                        # Transition to encrypt immediately
+                        fsm = ENCRYPT
+                        round_counter = 0
+
+            elif fsm == LOAD:
+                if load_en == 1:
+                    combined = (key_reg << 64) | state
+                    combined = ((combined << 1) | din) & ((1 << 144) - 1)
+                    key_reg = (combined >> 64) & 0xFFFFFFFFFFFFFFFFFFFF
+                    state = combined & 0xFFFFFFFFFFFFFFFF
+                    load_counter += 1
+                    if load_counter == 144:
+                        # Transition to encrypt immediately - first round executes this cycle
+                        fsm = ENCRYPT
+                        round_counter = 0
+                # If load_en is 0 during LOAD, stay in LOAD (counter pauses)
+
+            if fsm == ENCRYPT:
+                # Execute one round per cycle
+                if round_counter < 31:
+                    # Full round: addRoundKey, sBoxLayer, pLayer, key schedule
+                    state = add_round_key(state, key_reg)
+                    state = sbox_layer(state)
+                    state = player(state)
+                    round_counter += 1
+                    key_reg = key_schedule(key_reg, round_counter)
+                else:
+                    # Final addRoundKey only (round 32)
+                    state = add_round_key(state, key_reg)
+                    done = 1
+                    fsm = DONE
+                    unload_counter = 0
+
+            elif fsm == DONE:
+                if load_en == 1:
+                    # New load aborts done
+                    done = 0
+                    fsm = LOAD
+                    load_counter = 0
+                    key_reg = 0
+                    state = 0
+                    # Shift in first bit
+                    combined = (key_reg << 64) | state
+                    combined = ((combined << 1) | din) & ((1 << 144) - 1)
+                    key_reg = (combined >> 64) & 0xFFFFFFFFFFFFFFFFFFFF
+                    state = combined & 0xFFFFFFFFFFFFFFFF
+                    load_counter = 1
+                    unload_counter = 0
+                    if load_counter == 144:
+                        fsm = ENCRYPT
+                        round_counter = 0
+                elif shift_out_en == 1:
+                    # Output MSB-first
+                    bit_index = 63 - unload_counter
+                    dout = (state >> bit_index) & 1
+                    unload_counter += 1
+                    if unload_counter >= 64:
+                        unload_counter = 64  # clamp
+
+        # Compute dout for output
+        # dout is valid only when done and shift_out_en; we update dout in DONE state above
+        # For non-DONE states or when not unloading, dout holds last value or 0
+        if fsm != DONE or shift_out_en == 0 or done == 0:
+            # dout is don't-care; we output whatever dout currently holds
+            pass
+
+        out.append({"done": done, "dout": dout})
+
+    return out

@@ -1,0 +1,14 @@
+     0.00ns INFO     cocotb.regression                  Found test test_baud_tick_gen.test_baud_tick_gen_diff
+     0.00ns INFO     cocotb.regression                  Running test test_baud_tick_gen_diff (1/1)
+    60.00ns WARNING  cocotb.regression                  test_baud_tick_gen.test_baud_tick_gen_diff failed
+    60.00ns ERROR    cocotb.regression                  Test Failed: test_baud_tick_gen_diff (took 60.00ns)
+                                                          Traceback (most recent call last):
+                                                            File "/work/test_baud_tick_gen.py", line 38, in test_baud_tick_gen_diff
+                                                              assert actual == expected, (
+                                                          AssertionError: DIFF|cycle=6|signal=count|expected=217|actual=215
+    60.00ns INFO     cocotb.regression                  **************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************
+                                                        ** test_baud_tick_gen_diff       FAIL          60.00           0.00       60000.00 **
+                                                        **************************************************
+    60.00ns INFO     cocotb.regression                  *** SIM TIME COMPLETED ***

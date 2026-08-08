@@ -1,0 +1,101 @@
+{
+  "design_id": "decoder-3to8-demo-golden",
+  "root_ref": {
+    "artifact_id": "decoder-3to8-demo-golden.decoder_3to8.gds",
+    "version": 1,
+    "kind": "gdsii",
+    "content_hash": "sha256:f512cdf68eb4ddfce514f48a67c5bf4ea0c09148ab2ec39ec430183ada51c2b5"
+  },
+  "entries": [
+    {
+      "artifact_id": "decoder-3to8-demo-golden.spec",
+      "version": 1,
+      "kind": "spec",
+      "content_hash": "sha256:79fbbf241ee965743b70daac5a06ce1702efa34ad994b0164417b7ba5efb73d0",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "decoder-3to8-demo-golden.plan",
+      "version": 1,
+      "kind": "plan",
+      "content_hash": "sha256:d36de7c127b23d018f50752ab4a19469fabdd50a4be4b3b7b3459529eabe2df1",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "decoder-3to8-demo-golden.decoder_3to8.rtl",
+      "version": 1,
+      "kind": "rtl",
+      "content_hash": "sha256:af6a8ed0ef7feb625bba302205c873158ae62c7779331a0932141d9d42a8b3de",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "decoder-3to8-demo-golden.decoder_3to8.netlist",
+      "version": 1,
+      "kind": "netlist",
+      "content_hash": "sha256:8b8cbb3f45573d6cb91c5a67f9f2f822afb899d3ad575e769453a633e876d910",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "yosys",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "decoder-3to8-demo-golden.decoder_3to8.layout",
+      "version": 1,
+      "kind": "layout",
+      "content_hash": "sha256:7fd8c4c24874e77b0cb155f3aaf256a64e402dd449285730202b4128d61d1dce",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "librelane",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "decoder-3to8-demo-golden.decoder_3to8.gds",
+      "version": 1,
+      "kind": "gdsii",
+      "content_hash": "sha256:f512cdf68eb4ddfce514f48a67c5bf4ea0c09148ab2ec39ec430183ada51c2b5",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "magic",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    }
+  ]
+}

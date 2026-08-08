@@ -1,0 +1,63 @@
+{
+  "artifact_id": "present80-20260808T100059-e9c7df.mod_present80.tb",
+  "version": 1,
+  "kind": "testbench",
+  "design_id": "present80-20260808T100059-e9c7df",
+  "module_id": "mod_present80",
+  "content_hash": "sha256:096b405d375935a418d6b5e0e33727ead7085d0f712efc389ca5f97832ae646a",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "rtl",
+    "agent": "differential_tb_builder",
+    "tool": {
+      "name": "differential_tb",
+      "version": "f19.8",
+      "container_digest": null
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "present80-20260808T100059-e9c7df.mod_present80.oracle",
+        "version": 1,
+        "kind": "oracle",
+        "content_hash": "sha256:5769d5926781fd967a94685d9eeb6f676eb2872600ef39eff3820d3e2405064b"
+      },
+      {
+        "artifact_id": "present80-20260808T100059-e9c7df.mod_present80.assertions",
+        "version": 1,
+        "kind": "assertions",
+        "content_hash": "sha256:bd929f6634ad00c04b279c347ba3f717c8d82b42f68b44d07eb1ea2f6e549005"
+      },
+      {
+        "artifact_id": "present80-20260808T100059-e9c7df.plan",
+        "version": 1,
+        "kind": "plan",
+        "content_hash": "sha256:749a0712603c2f2b18de52897eedcb6d0c02758f360ad082a79fdd0f1daedf0e"
+      },
+      {
+        "artifact_id": "present80-20260808T100059-e9c7df.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:92a97e84b82608054e7635ddc7c1482f0aca08f1f90ca2af211830da241e0070"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-08T10:05:05.364608Z",
+  "metadata": {
+    "vacuous_completion_port": "done"
+  },
+  "source": {
+    "path": "63/6390ee7c8ca712012142f6e21585e66d9a23dde8dca3a3072586c5d0b198d390",
+    "sha256": "6390ee7c8ca712012142f6e21585e66d9a23dde8dca3a3072586c5d0b198d390",
+    "size_bytes": 4567,
+    "media_type": "text/x-python"
+  },
+  "framework": "cocotb",
+  "target_module": "present80"
+}

@@ -1,0 +1,61 @@
+# Default NoeSI configuration. Mirrors the shape documented in:
+#   docs/model_routing.md   (registry / loops / tasks)
+#   docs/tool_contracts.md  (sandbox image)
+# Override any field via env vars: CHIP_AGENT_<SECTION>__<FIELD>=...
+
+paths:
+  runs_dir: runs
+  store_db: runs/store.sqlite
+
+constraints:
+  pdk: gf180mcuD
+  std_cell_lib: gf180mcu_fd_sc_mcu7t5v0
+
+budgets:
+  cost_budget_usd: 5.0
+  max_attempts: 3
+  max_react_steps: 6
+  global_feedback_budget: 2
+
+routing:
+  registry:
+    local-coder:
+      provider: ollama
+      model: qwen2.5-coder:7b
+      endpoint: http://localhost:11434
+    frontier:
+      provider: anthropic
+      model: claude-opus-4-7
+  loops:
+    inner:                       # syntactic repair
+      model: local-coder
+      temperature: 0.4
+      n: 3
+    outer:                       # semantic repair
+      model: frontier
+      temperature: 0.2
+      n: 1
+  tasks:
+    rtl_gen:
+      model: local-coder
+      temperature: 0.8
+      n: 8
+    plan:
+      model: frontier
+      temperature: 0.2
+      n: 1
+    diagnose:
+      model: frontier
+      temperature: 0.2
+      n: 1
+
+sandbox:
+  image: hpretl/iic-osic-tools
+  image_tag: "2026.04"
+  # image_digest is resolved per-workstation via:
+  #   python -m chip_agent.tools.image pin --config <your-config.yaml>
+  # The resolved sha256:... is then recorded here for reproducibility.
+  image_digest: null
+  cpu_limit: 4.0
+  memory_limit_gb: 8.0
+  time_limit_s: 600

@@ -1,0 +1,245 @@
+module present80 #(
+    parameter BLOCK_BITS    = 64,
+    parameter CLK_PERIOD_NS = 10,
+    parameter ENCRYPT_CYCLES= 32,
+    parameter KEY_BITS      = 80,
+    parameter LOAD_CYCLES   = 144,
+    parameter ROUNDS        = 31,
+    parameter UNLOAD_CYCLES = 64
+)(
+    input  wire clk,
+    input  wire rst_n,
+    input  wire load_en,
+    input  wire din,
+    input  wire shift_out_en,
+    output wire dout,
+    output wire done
+);
+
+// ============================================================
+// State machine
+// ============================================================
+localparam ST_IDLE    = 3'd0;
+localparam ST_LOAD    = 3'd1;
+localparam ST_ENCRYPT = 3'd2;
+localparam ST_DONE    = 3'd3;
+localparam ST_UNLOAD  = 3'd4;
+
+reg [2:0] state, next_state;
+
+// ============================================================
+// Registers
+// ============================================================
+reg [KEY_BITS-1:0]   key_reg;
+reg [BLOCK_BITS-1:0] block_reg;
+reg [7:0]            load_cnt;    // counts bits loaded (0..143)
+reg [4:0]            round_cnt;   // counts rounds done (0..30)
+reg [6:0]            unload_cnt;  // counts bits unloaded (0..63)
+reg                  done_reg;
+
+// ============================================================
+// S-box (4-bit, PRESENT specification)
+// ============================================================
+function [3:0] sbox;
+    input [3:0] x;
+    case (x)
+        4'h0: sbox = 4'hC;
+        4'h1: sbox = 4'h5;
+        4'h2: sbox = 4'h6;
+        4'h3: sbox = 4'hB;
+        4'h4: sbox = 4'h9;
+        4'h5: sbox = 4'h0;
+        4'h6: sbox = 4'hA;
+        4'h7: sbox = 4'hD;
+        4'h8: sbox = 4'h3;
+        4'h9: sbox = 4'hE;
+        4'hA: sbox = 4'hF;
+        4'hB: sbox = 4'h8;
+        4'hC: sbox = 4'h4;
+        4'hD: sbox = 4'h7;
+        4'hE: sbox = 4'h1;
+        4'hF: sbox = 4'h2;
+        default: sbox = 4'h0;
+    endcase
+endfunction
+
+// ============================================================
+// S-layer: apply sbox to all 16 nibbles
+// ============================================================
+function [63:0] sLayer;
+    input [63:0] b;
+    integer i;
+    reg [63:0] tmp;
+    begin
+        for (i = 0; i < 16; i = i + 1)
+            tmp[i*4 +: 4] = sbox(b[i*4 +: 4]);
+        sLayer = tmp;
+    end
+endfunction
+
+// ============================================================
+// pLayer: bit permutation P(i) = (i/4) + 16*(i%4)
+// ============================================================
+function [63:0] pLayer;
+    input [63:0] b;
+    integer i;
+    reg [63:0] tmp;
+    begin
+        for (i = 0; i < 64; i = i + 1)
+            tmp[(i/4) + 16*(i%4)] = b[i];
+        pLayer = tmp;
+    end
+endfunction
+
+// ============================================================
+// Key schedule: update 80-bit key register
+// round_num is 1-based (the round just completed, 1..31)
+// ============================================================
+function [79:0] keySchedule;
+    input [79:0] k;
+    input [4:0]  round_num; // 1..31
+    reg [79:0]   tmp;
+    reg [4:0]    rc;
+    begin
+        // 1. Rotate left by 61 (= right by 19)
+        tmp = {k[18:0], k[79:19]};
+        // 2. S-box on top 4 bits
+        tmp[79:76] = sbox(tmp[79:76]);
+        // 3. XOR round counter into bits [19:15]
+        rc = round_num[4:0];
+        tmp[19:15] = tmp[19:15] ^ rc;
+        keySchedule = tmp;
+    end
+endfunction
+
+// ============================================================
+// Combinational round computation
+// ============================================================
+wire [63:0] after_sbox;
+wire [63:0] after_perm;
+wire [63:0] round_key;
+wire [63:0] after_xor;
+
+assign round_key  = key_reg[79:16];  // top 64 bits of key
+assign after_xor  = block_reg ^ round_key;
+assign after_sbox = sLayer(after_xor);
+assign after_perm = pLayer(after_sbox);
+
+// ============================================================
+// FSM: sequential
+// ============================================================
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+        state <= ST_IDLE;
+    else
+        state <= next_state;
+end
+
+// ============================================================
+// FSM: next state logic
+// ============================================================
+always @(*) begin
+    case (state)
+        ST_IDLE:    next_state = load_en    ? ST_LOAD    : ST_IDLE;
+        ST_LOAD:    next_state = (!load_en && load_cnt == (LOAD_CYCLES-1)) ? ST_ENCRYPT :
+                                 (!load_en && load_cnt != (LOAD_CYCLES-1)) ? ST_IDLE    : ST_LOAD;
+        ST_ENCRYPT: next_state = (round_cnt == (ROUNDS-1)) ? ST_DONE : ST_ENCRYPT;
+        ST_DONE:    next_state = shift_out_en ? ST_UNLOAD : ST_DONE;
+        ST_UNLOAD:  next_state = (unload_cnt == (UNLOAD_CYCLES-1)) ? ST_DONE : ST_UNLOAD;
+        default:    next_state = ST_IDLE;
+    endcase
+end
+
+// ============================================================
+// Datapath: sequential
+// ============================================================
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        key_reg    <= {KEY_BITS{1'b0}};
+        block_reg  <= {BLOCK_BITS{1'b0}};
+        load_cnt   <= 8'd0;
+        round_cnt  <= 5'd0;
+        unload_cnt <= 7'd0;
+        done_reg   <= 1'b0;
+    end else begin
+        case (state)
+            // ------------------------------------------------
+            ST_IDLE: begin
+                load_cnt   <= 8'd0;
+                round_cnt  <= 5'd0;
+                unload_cnt <= 7'd0;
+                done_reg   <= 1'b0;
+                if (load_en) begin
+                    // Start loading: shift first bit in
+                    // Key is MSB-first: key_reg shifts left, din goes to LSB
+                    key_reg   <= {key_reg[KEY_BITS-2:0], din};
+                    load_cnt  <= 8'd1;
+                end
+            end
+
+            // ------------------------------------------------
+            ST_LOAD: begin
+                if (load_en) begin
+                    if (load_cnt < KEY_BITS) begin
+                        // Still loading key (bits 1..79 since bit 0 loaded in IDLE)
+                        key_reg  <= {key_reg[KEY_BITS-2:0], din};
+                    end else begin
+                        // Loading plaintext (bits 80..143)
+                        block_reg <= {block_reg[BLOCK_BITS-2:0], din};
+                    end
+                    load_cnt <= load_cnt + 8'd1;
+                end
+                // If load_en goes low, transition handled by FSM
+                // Reset counters for encrypt phase when leaving
+                if (!load_en && load_cnt == (LOAD_CYCLES-1)) begin
+                    round_cnt  <= 5'd0;
+                    unload_cnt <= 7'd0;
+                end
+            end
+
+            // ------------------------------------------------
+            ST_ENCRYPT: begin
+                // Perform one round
+                // XOR with round key, S-layer, P-layer
+                block_reg <= after_perm;
+                // Update key schedule; round number = round_cnt + 1
+                key_reg   <= keySchedule(key_reg, round_cnt + 5'd1);
+                round_cnt <= round_cnt + 5'd1;
+                if (round_cnt == (ROUNDS-1)) begin
+                    done_reg <= 1'b1;
+                end
+            end
+
+            // ------------------------------------------------
+            ST_DONE: begin
+                done_reg   <= 1'b1;
+                unload_cnt <= 7'd0;
+                if (shift_out_en) begin
+                    // Will transition to UNLOAD next cycle
+                end
+            end
+
+            // ------------------------------------------------
+            ST_UNLOAD: begin
+                // Shift out MSB first
+                block_reg  <= {block_reg[BLOCK_BITS-2:0], 1'b0};
+                unload_cnt <= unload_cnt + 7'd1;
+                if (unload_cnt == (UNLOAD_CYCLES-1)) begin
+                    done_reg <= 1'b1;
+                end
+            end
+
+            default: begin
+                // nothing
+            end
+        endcase
+    end
+end
+
+// ============================================================
+// Outputs
+// ============================================================
+assign done = done_reg;
+assign dout = (state == ST_UNLOAD) ? block_reg[BLOCK_BITS-1] : 1'b0;
+
+endmodule

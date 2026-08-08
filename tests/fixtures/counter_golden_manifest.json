@@ -1,0 +1,101 @@
+{
+  "design_id": "counter-demo-golden",
+  "root_ref": {
+    "artifact_id": "counter-demo-golden.counter.gds",
+    "version": 1,
+    "kind": "gdsii",
+    "content_hash": "sha256:748ca33c394fa68b83bcc036040e696ff8ebe4b3aa75bd490d7936042b1d4af2"
+  },
+  "entries": [
+    {
+      "artifact_id": "counter-demo-golden.spec",
+      "version": 1,
+      "kind": "spec",
+      "content_hash": "sha256:6ee7b3fb33e0c7c354ffe52528e87899a377bf62012c0e4eec9b8ce7f2c2f9d2",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "counter-demo-golden.plan",
+      "version": 1,
+      "kind": "plan",
+      "content_hash": "sha256:73501a29fc195513a7e38b303981f1500c2bd1697fed79a564d19ba107d586ab",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "counter-demo-golden.counter.rtl",
+      "version": 1,
+      "kind": "rtl",
+      "content_hash": "sha256:8d5bba6a3abab477fd52aed794d3b954e8ac2e21fb2637aa2945ecd3d93428d6",
+      "config_hash": null,
+      "seed": null,
+      "tool": null,
+      "model": {
+        "provider": "stub",
+        "model": "deterministic",
+        "temperature": 0.0,
+        "top_p": null,
+        "seed": null
+      }
+    },
+    {
+      "artifact_id": "counter-demo-golden.counter.netlist",
+      "version": 1,
+      "kind": "netlist",
+      "content_hash": "sha256:189301a2d6a87d689885abb1e3000eb61e1ddc252edf46a08a9ca1e527272205",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "yosys",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "counter-demo-golden.counter.layout",
+      "version": 1,
+      "kind": "layout",
+      "content_hash": "sha256:7166d42aece9779e63fd64bbbb1e5136860728bc339ba8e8c39878c8e4b1fefe",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "librelane",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    },
+    {
+      "artifact_id": "counter-demo-golden.counter.gds",
+      "version": 1,
+      "kind": "gdsii",
+      "content_hash": "sha256:748ca33c394fa68b83bcc036040e696ff8ebe4b3aa75bd490d7936042b1d4af2",
+      "config_hash": null,
+      "seed": null,
+      "tool": {
+        "name": "magic",
+        "version": "bundled",
+        "container_digest": null
+      },
+      "model": null
+    }
+  ]
+}

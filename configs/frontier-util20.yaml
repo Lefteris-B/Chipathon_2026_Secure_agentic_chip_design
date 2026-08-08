@@ -1,0 +1,75 @@
+# Frontier-only routing config: every loop + task goes to a single
+# Anthropic-served frontier model. No local Ollama dependency.
+#
+# Trade-off: highest quality across intake / planning / RTL / diagnosis,
+# but every call is billed. The project's stated policy is "local for
+# high-volume candidate sampling, frontier for planning and semantic
+# diagnosis" (see CLAUDE.md) — this config ignores the local half on
+# purpose so a developer with no Ollama setup can drive an end-to-end
+# run with one API key.
+#
+# Prerequisites:
+#
+#   * ANTHROPIC_API_KEY exported in the environment
+#
+# Sandbox + constraints + budgets mirror configs/demo-counter.yaml so
+# this file can drive the same end-to-end pipeline; only `routing`
+# differs.
+
+paths:
+  runs_dir: runs
+  store_db: runs/store.sqlite
+
+constraints:
+  pdk: gf180mcuD
+  std_cell_lib: gf180mcu_fd_sc_mcu7t5v0
+  target_clock_ns: 10.0
+  target_utilization: 0.2
+
+budgets:
+  cost_budget_usd: 5.0
+  max_attempts: 3
+  max_react_steps: 6
+  global_feedback_budget: 2
+
+sandbox:
+  image: hpretl/iic-osic-tools
+  image_tag: chipathon26
+  image_digest: sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4
+  cpu_limit: 4.0
+  memory_limit_gb: 8.0
+  time_limit_s: 1800
+  command_prefix: ["--skip"]
+
+routing:
+  # F19.11: opt into the M19 test-first workflow (CONTRACT / ORACLE /
+  # ASSERTIONS / ORACLE_VERIFICATION + differential cocotb harness +
+  # adaptive reflection routing). Default in the Settings schema is
+  # ``false`` (pre-F19.7 path); shipped configs explicitly set ``true``
+  # so live users get M19. Flip to ``false`` to roll back if a
+  # particular spec misbehaves.
+  use_test_first_workflow: true
+  registry:
+    frontier:
+      provider: anthropic
+      model: claude-sonnet-4-6
+  loops:
+    inner: {model: frontier, temperature: 0.4, n: 1}
+    outer: {model: frontier, temperature: 0.0, n: 1}
+  tasks:
+    spec_intake:         {model: frontier, temperature: 0.0, n: 1}
+    plan:                {model: frontier, temperature: 0.0, n: 1}
+    contract_extraction: {model: frontier, temperature: 0.0, n: 1}  # F19.3
+    oracle_plan:         {model: frontier, temperature: 0.0, n: 1}  # F19.4b
+    oracle_gen:          {model: frontier, temperature: 0.2, n: 1}  # F19.4
+    assertion_extract:   {model: frontier, temperature: 0.0, n: 1}  # F19.5
+    assertion_map:       {model: frontier, temperature: 0.0, n: 1}  # F19.5
+    assertion_translate: {model: frontier, temperature: 0.2, n: 1}  # F19.5
+    rtl_gen:             {model: frontier, temperature: 0.4, n: 1}
+    rtl_repair:          {model: frontier, temperature: 0.4, n: 1}
+    tb_gen:              {model: frontier, temperature: 0.2, n: 1}
+    diagnose:            {model: frontier, temperature: 0.0, n: 1}
+    reflection_routing:  {model: frontier, temperature: 0.0, n: 1}  # F19.9
+    repair_rationale:    {model: frontier, temperature: 0.0, n: 1}  # F20.1
+    physical_repair_routing: {model: frontier, temperature: 0.0, n: 1}  # F21.3
+    human_hint_distill:  {model: frontier, temperature: 0.0, n: 1}  # F23.2

@@ -1,0 +1,75 @@
+[project]
+name = "chip-agent"
+version = "0.0.1"
+description = "NoeSI — agentic NL-spec → GDSII chip-design framework on sky130A."
+readme = "Readme.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+dependencies = [
+    "pydantic>=2.7,<3",
+    "pydantic-settings>=2.5,<3",
+    "pyyaml>=6.0,<7",
+    "litellm>=1.50,<2",
+    "langgraph>=0.2,<1",
+    "langgraph-checkpoint-sqlite>=2.0,<3",
+    "textual>=0.85,<1",
+    "pyvcd>=0.4,<1",   # F20.6: VCD window extraction for diagnosis enrichment
+]
+
+[project.scripts]
+chip-agent = "chip_agent.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["chip_agent"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pytest>=8",
+    "types-pyyaml>=6.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = [
+    "E501",  # long lines — design docs and prompts will exceed line length
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_decorators = false
+plugins = ["pydantic.mypy"]
+files = ["chip_agent"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "docker: integration test requiring a reachable docker daemon (auto-skipped otherwise)",
+]

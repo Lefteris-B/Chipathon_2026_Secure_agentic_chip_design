@@ -1,0 +1,538 @@
+# rationale: These assertions operate on the serial interface of PRESENT-80.
+# rationale: Since we only observe 1-bit serial signals (din, dout, done, load_en, shift_out_en),
+# rationale: we must reconstruct internal state from the observable serial stream.
+# rationale: For sbox/player/key_schedule invariants we simulate the cipher internally and
+# rationale: compare against observed outputs (dout bits during unload phase).
+# rationale: The stim list contains input signals per cycle; observed contains output signals per cycle.
+# rationale: We treat each dict entry as the value sampled at that rising clock edge.
+
+def _present_sbox(nibble):
+    """Apply PRESENT S-box to a 4-bit nibble."""
+    sbox = [0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD,
+            0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2]
+    return sbox[nibble & 0xF]
+
+
+def _sbox_layer(state):
+    """Apply S-box to all 16 nibbles of 64-bit state."""
+    result = 0
+    for i in range(16):
+        nibble = (state >> (i * 4)) & 0xF
+        result |= _present_sbox(nibble) << (i * 4)
+    return result
+
+
+def _player(state):
+    """Apply PRESENT pLayer permutation to 64-bit state."""
+    result = 0
+    for i in range(63):
+        bit = (state >> i) & 1
+        new_pos = (i * 16) % 63
+        result |= bit << new_pos
+    # P(63) = 63
+    bit = (state >> 63) & 1
+    result |= bit << 63
+    return result
+
+
+def _key_schedule(key_reg, round_counter):
+    """Apply PRESENT-80 key schedule for one round."""
+    # 61-bit left rotate (= right rotate by 19)
+    key_reg = ((key_reg << 61) | (key_reg >> 19)) & ((1 << 80) - 1)
+    # S-box on top 4 bits
+    top4 = (key_reg >> 76) & 0xF
+    key_reg = (key_reg & ~(0xF << 76)) | (_present_sbox(top4) << 76)
+    # XOR round counter into bits 19:15
+    key_reg ^= (round_counter & 0x1F) << 15
+    return key_reg
+
+
+def _simulate_present80(key, plaintext):
+    """Simulate full PRESENT-80 encryption, returning (ciphertext, round_states, round_keys)."""
+    state = plaintext
+    key_reg = key
+    round_states = []  # state after each round operation (before final ARK)
+    round_keys = []    # key used in each round's ARK
+
+    for rnd in range(1, 32):
+        # addRoundKey
+        state ^= (key_reg >> 16) & 0xFFFFFFFFFFFFFFFF
+        # sBoxLayer
+        state = _sbox_layer(state)
+        # pLayer
+        state = _player(state)
+        # key schedule
+        round_keys.append(key_reg)
+        key_reg = _key_schedule(key_reg, rnd)
+        round_states.append(state)
+
+    # Final addRoundKey (round 32)
+    state ^= (key_reg >> 16) & 0xFFFFFFFFFFFFFFFF
+    round_keys.append(key_reg)
+    round_states.append(state)
+
+    return state, round_states, round_keys
+
+
+def _extract_load_data(stim):
+    """
+    Extract key and plaintext from stimulus stream.
+    Returns (key, plaintext, load_start_cycle) or (None, None, None) if not found.
+    Scans for 144 consecutive cycles with load_en=1.
+    """
+    n = len(stim)
+    count = 0
+    bits = []
+    start = None
+
+    for i in range(n):
+        le = stim[i].get('load_en', 0)
+        if le:
+            if count == 0:
+                start = i
+            bits.append(stim[i].get('din', 0) & 1)
+            count += 1
+            if count == 144:
+                # Reconstruct key (first 80 bits) and plaintext (next 64 bits)
+                key = 0
+                for b in bits[:80]:
+                    key = (key << 1) | b
+                plaintext = 0
+                for b in bits[80:144]:
+                    plaintext = (plaintext << 1) | b
+                return key, plaintext, start
+        else:
+            # Reset if load_en goes low (non-consecutive)
+            count = 0
+            bits = []
+            start = None
+
+    return None, None, None
+
+
+def _find_done_assertion(observed):
+    """Find the first cycle index where done=1."""
+    for i, obs in enumerate(observed):
+        if obs.get('done', 0) == 1:
+            return i
+    return None
+
+
+def assert_reset_clears_done(args):
+    """
+    Checks that whenever rst_n=0, done is 0 in the same cycle (asynchronous reset).
+    Scans all cycles where rst_n is deasserted and verifies done=0.
+    """
+    stim, observed = args
+    violations = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if s.get('rst_n', 1) == 0:
+            if o.get('done', 0) != 0:
+                violations.append(i)
+    if violations:
+        return False, f"done not cleared during reset at cycles: {violations[:10]}"
+    return True, "reset_clears_done: done is 0 whenever rst_n=0"
+
+
+def assert_encrypt_auto_starts(args):
+    """
+    Checks that encryption begins automatically after 144 load bits without any extra trigger.
+    Verifies that done eventually asserts after a complete 144-bit load sequence,
+    and that no additional load_en pulse is needed between load completion and done.
+    """
+    stim, observed = args
+    key, plaintext, load_start = _extract_load_data(stim)
+    if key is None:
+        return True, "encrypt_auto_starts: no complete 144-bit load sequence found, skipping"
+
+    # Find the cycle where the 144th bit was loaded
+    count = 0
+    load_end_cycle = None
+    for i in range(len(stim)):
+        if stim[i].get('load_en', 0):
+            count += 1
+            if count == 144:
+                load_end_cycle = i
+                break
+
+    if load_end_cycle is None:
+        return True, "encrypt_auto_starts: load sequence incomplete, skipping"
+
+    # After load_end_cycle, check that done eventually asserts
+    # without needing another load_en pulse
+    done_cycle = None
+    for i in range(load_end_cycle + 1, len(observed)):
+        if observed[i].get('done', 0) == 1:
+            done_cycle = i
+            break
+
+    if done_cycle is None:
+        return False, (f"encrypt_auto_starts: done never asserted after 144-bit load "
+                       f"completing at cycle {load_end_cycle}")
+
+    # Verify done asserts within a reasonable window (32 encrypt cycles + small margin)
+    cycles_to_done = done_cycle - load_end_cycle
+    if cycles_to_done > 35:
+        return False, (f"encrypt_auto_starts: done asserted {cycles_to_done} cycles after "
+                       f"load completion (expected ~32), may indicate manual trigger needed")
+
+    return True, (f"encrypt_auto_starts: done asserted {cycles_to_done} cycles after "
+                  f"144th load bit at cycle {load_end_cycle}")
+
+
+def assert_sbox_mapping(args):
+    """
+    Checks the PRESENT S-box mapping: 0->C,1->5,2->6,3->B,4->9,5->0,6->A,7->D,
+    8->3,9->E,A->F,B->8,C->4,D->7,E->1,F->2.
+    Verifies by simulating encryption and comparing ciphertext against observed dout bits.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "sbox_mapping: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    # Collect observed dout bits during unload (done=1, shift_out_en=1)
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, f"sbox_mapping: only {len(dout_bits)} dout bits observed, cannot verify"
+
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    if observed_ct != expected_ct:
+        return False, (f"sbox_mapping: ciphertext mismatch. "
+                       f"Expected 0x{expected_ct:016X}, got 0x{observed_ct:016X}. "
+                       f"S-box may be incorrect.")
+    return True, f"sbox_mapping: ciphertext matches expected 0x{expected_ct:016X}"
+
+
+def assert_player_permutation(args):
+    """
+    Checks the pLayer permutation P(i)=(i*16) mod 63 for i in 0..62, P(63)=63.
+    Verifies by simulating encryption with correct pLayer and comparing against observed ciphertext.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "player_permutation: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, f"player_permutation: only {len(dout_bits)} dout bits observed, cannot verify"
+
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    if observed_ct != expected_ct:
+        return False, (f"player_permutation: ciphertext mismatch. "
+                       f"Expected 0x{expected_ct:016X}, got 0x{observed_ct:016X}. "
+                       f"pLayer may be incorrect.")
+    return True, f"player_permutation: ciphertext matches expected 0x{expected_ct:016X}"
+
+
+def assert_key_schedule_rotate(args):
+    """
+    Checks that the key schedule performs a 61-bit left rotation of the 80-bit key_reg each round.
+    Verifies indirectly by simulating full encryption and comparing ciphertext.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "key_schedule_rotate: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, f"key_schedule_rotate: only {len(dout_bits)} dout bits observed, cannot verify"
+
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    if observed_ct != expected_ct:
+        return False, (f"key_schedule_rotate: ciphertext mismatch. "
+                       f"Expected 0x{expected_ct:016X}, got 0x{observed_ct:016X}. "
+                       f"Key rotation may be incorrect.")
+    return True, f"key_schedule_rotate: ciphertext matches expected 0x{expected_ct:016X}"
+
+
+def assert_key_schedule_sbox(args):
+    """
+    Checks that after 61-bit rotation, key_reg[79:76] is replaced by S(key_reg[79:76]).
+    Verifies indirectly by simulating full encryption and comparing ciphertext.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "key_schedule_sbox: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, f"key_schedule_sbox: only {len(dout_bits)} dout bits observed, cannot verify"
+
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    if observed_ct != expected_ct:
+        return False, (f"key_schedule_sbox: ciphertext mismatch. "
+                       f"Expected 0x{expected_ct:016X}, got 0x{observed_ct:016X}. "
+                       f"Key schedule S-box substitution may be incorrect.")
+    return True, f"key_schedule_sbox: ciphertext matches expected 0x{expected_ct:016X}"
+
+
+def assert_key_schedule_round_counter_xor(args):
+    """
+    Checks that the 5-bit round counter i (1..31) is XORed into key_reg[19:15] each round.
+    Verifies indirectly by simulating full encryption and comparing ciphertext.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "key_schedule_round_counter_xor: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, (f"key_schedule_round_counter_xor: only {len(dout_bits)} dout bits "
+                      f"observed, cannot verify")
+
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    if observed_ct != expected_ct:
+        return False, (f"key_schedule_round_counter_xor: ciphertext mismatch. "
+                       f"Expected 0x{expected_ct:016X}, got 0x{observed_ct:016X}. "
+                       f"Round counter XOR into key may be incorrect.")
+    return True, (f"key_schedule_round_counter_xor: ciphertext matches "
+                  f"expected 0x{expected_ct:016X}")
+
+
+def assert_done_asserted_after_encrypt(args):
+    """
+    Checks that done transitions to 1 after the 32nd encrypt cycle and remains high
+    until reset or a new load begins.
+    """
+    stim, observed = args
+    key, plaintext, load_start = _extract_load_data(stim)
+    if key is None:
+        return True, "done_asserted_after_encrypt: no complete load sequence found, skipping"
+
+    # Find cycle where 144th bit was loaded
+    count = 0
+    load_end_cycle = None
+    for i in range(len(stim)):
+        if stim[i].get('load_en', 0):
+            count += 1
+            if count == 144:
+                load_end_cycle = i
+                break
+
+    if load_end_cycle is None:
+        return True, "done_asserted_after_encrypt: load incomplete, skipping"
+
+    # done should assert within ~32 cycles after load_end_cycle
+    done_cycle = None
+    for i in range(load_end_cycle + 1, min(load_end_cycle + 40, len(observed))):
+        if observed[i].get('done', 0) == 1:
+            done_cycle = i
+            break
+
+    if done_cycle is None:
+        return False, (f"done_asserted_after_encrypt: done never asserted within 40 cycles "
+                       f"after load completion at cycle {load_end_cycle}")
+
+    cycles_after_load = done_cycle - load_end_cycle
+    if cycles_after_load < 30 or cycles_after_load > 34:
+        return False, (f"done_asserted_after_encrypt: done asserted {cycles_after_load} cycles "
+                       f"after load end (expected ~32)")
+
+    # Check done remains high until reset or new load
+    for i in range(done_cycle, len(observed)):
+        rst = stim[i].get('rst_n', 1)
+        le = stim[i].get('load_en', 0)
+        d = observed[i].get('done', 0)
+
+        if rst == 0:
+            # Reset - done should be 0
+            if d != 0:
+                return False, (f"done_asserted_after_encrypt: done not cleared by reset "
+                               f"at cycle {i}")
+            break
+        if le == 1 and d == 0:
+            # New load started, done cleared - acceptable
+            break
+        if d == 0 and rst == 1 and le == 0:
+            return False, (f"done_asserted_after_encrypt: done unexpectedly cleared at "
+                           f"cycle {i} without reset or new load")
+
+    return True, (f"done_asserted_after_encrypt: done asserted at cycle {done_cycle} "
+                  f"({cycles_after_load} cycles after load end)")
+
+
+def assert_unload_serial_msb_first(args):
+    """
+    Checks that while done=1 and shift_out_en=1, dout outputs ciphertext bits MSB-first.
+    Collects 64 dout bits and verifies they match the simulated ciphertext MSB-first.
+    """
+    stim, observed = args
+    key, plaintext, _ = _extract_load_data(stim)
+    if key is None:
+        return True, "unload_serial_msb_first: no complete load sequence found, skipping"
+
+    expected_ct, _, _ = _simulate_present80(key, plaintext)
+
+    # Collect dout bits when done=1 and shift_out_en=1
+    dout_bits = []
+    for i, (s, o) in enumerate(zip(stim, observed)):
+        if o.get('done', 0) == 1 and s.get('shift_out_en', 0) == 1:
+            dout_bits.append(o.get('dout', 0) & 1)
+        if len(dout_bits) == 64:
+            break
+
+    if len(dout_bits) < 64:
+        return True, (f"unload_serial_msb_first: only {len(dout_bits)} bits observed "
+                      f"during unload, cannot fully verify")
+
+    # Reconstruct observed ciphertext from MSB-first serial stream
+    observed_ct = 0
+    for b in dout_bits:
+        observed_ct = (observed_ct << 1) | b
+
+    # Verify bit-by-bit order: first bit should be state[63]
+    errors = []
+    for bit_idx in range(64):
+        expected_bit = (expected_ct >> (63 - bit_idx)) & 1
+        if dout_bits[bit_idx] != expected_bit:
+            errors.append((bit_idx, expected_bit, dout_bits[bit_idx]))
+
+    if errors:
+        return False, (f"unload_serial_msb_first: {len(errors)} bit mismatches. "
+                       f"First error at bit position {errors[0][0]}: "
+                       f"expected {errors[0][1]}, got {errors[0][2]}. "
+                       f"Expected CT=0x{expected_ct:016X}, got 0x{observed_ct:016X}")
+
+    return True, (f"unload_serial_msb_first: all 64 ciphertext bits match MSB-first "
+                  f"for CT=0x{expected_ct:016X}")
+
+
+def assert_dout_stable_when_not_unloading(args):
+    """
+    Checks that dout is only required to be valid when done=1 and shift_out_en=1.
+    This assertion verifies the contract is not violated by checking that we do NOT
+    require dout to be any specific value when done=0 or shift_out_en=0.
+    Since the contract says dout may be any value in those cases, we simply verify
+    that the observed dout is always 0 or 1 (a valid binary signal).
+    """
+    stim, observed = args
+    invalid = []
+    for i, o in enumerate(observed):
+        dout_val = o.get('dout', 0)
+        if dout_val not in (0, 1):
+            invalid.append((i, dout_val))
+
+    if invalid:
+        return False, (f"dout_stable_when_not_unloading: dout has non-binary values at "
+                       f"cycles {invalid[:5]}")
+
+    # Additionally verify: when done=0 or shift_out_en=0, we make no assertion on dout value
+    # (the contract explicitly says it may be any value)
+    # We just confirm the signal is always binary
+    return True, ("dout_stable_when_not_unloading: dout is always a valid binary signal; "
+                  "no validity requirement when done=0 or shift_out_en=0")
+
+
+def assert_new_load_aborts_done(args):
+    """
+    Checks that asserting load_en while done=1 clears done and begins a new load phase.
+    Scans for cycles where done=1 and load_en=1, then verifies done is cleared.
+    """
+    stim, observed = args
+    n = min(len(stim), len(observed))
+
+    violations = []
+    for i in range(n - 1):
+        done_now = observed[i].get('done', 0)
+        le_now = stim[i].get('load_en', 0)
+
+        if done_now == 1 and le_now == 1:
+            # On the next cycle, done should be cleared (or reset occurred)
+            rst_next = stim[i + 1].get('rst_n', 1) if i + 1 < n else 1
+            done_next = observed[i + 1].get('done', 0) if i + 1 < n else 0
+
+            if rst_next == 0:
+                # Reset takes priority, skip
+                continue
+
+            # After load_en asserted while done=1, done should be 0 on next cycle
+            # (or at least within a couple cycles as the FSM transitions)
+            if done_next == 1:
+                # Check if load_en is still high (could still be in transition)
+                le_next = stim[i + 1].get('load_en', 0) if i + 1 < n else 0
+                if le_next == 0:
+                    # load_en went low but done is still 1 - this might be ok if
+                    # the FSM needs one cycle to clear done
+                    pass
+                else:
+                    # load_en still high and done still high - check one more cycle
+                    if i + 2 < n:
+                        done_2 = observed[i + 2].get('done', 0)
+                        rst_2 = stim[i + 2].get('rst_n', 1)
+                        if done_2 == 1 and rst_2 == 1:
+                            violations.append(i)
+
+    if violations:
+        return False, (f"new_load_aborts_done: done not cleared after load_en asserted "
+                       f"while done=1 at cycles: {violations[:10]}")
+
+    # Check if we ever observed the scenario
+    scenario_found = any(
+        observed[i].get('done', 0) == 1 and stim[i].get('load_en', 0) == 1
+        for i in range(n)
+    )
+
+    if not scenario_found:
+        return True, "new_load_aborts_done: scenario (done=1 and load_en=1) not observed, skipping"
+
+    return True, "new_load_aborts_done: done correctly cleared when load_en asserted during done=1"

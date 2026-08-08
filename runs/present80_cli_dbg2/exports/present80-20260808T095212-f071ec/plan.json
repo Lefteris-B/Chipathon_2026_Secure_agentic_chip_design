@@ -1,0 +1,103 @@
+{
+  "artifact_id": "present80-20260808T095212-f071ec.plan",
+  "version": 1,
+  "kind": "plan",
+  "design_id": "present80-20260808T095212-f071ec",
+  "module_id": null,
+  "content_hash": "sha256:7aa4168526b309e4c0d3ac8b71f09e8400bf2c175410894477008c2ae41e89ef",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "plan",
+    "agent": "planner",
+    "tool": null,
+    "model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "temperature": 0.0,
+      "top_p": null,
+      "seed": null,
+      "prompt_tokens": 2411,
+      "completion_tokens": 602,
+      "cost_usd": null
+    },
+    "inputs": [
+      {
+        "artifact_id": "present80-20260808T095212-f071ec.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:1cdb3931800c5ff2d6cad9a44641ce3c80798b42dec2849d92163147f0083479"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-08-08T09:52:43.847571Z",
+  "metadata": {},
+  "top_module_id": "mod_present80",
+  "modules": [
+    {
+      "module_id": "mod_present80",
+      "name": "present80",
+      "description": "Single flat PRESENT-80 lightweight block cipher with serial load/unload, iterative one-round-per-clock encryption, FSM control, inlined S-box, pLayer, and key schedule.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "in",
+          "width": 1,
+          "description": "Primary clock, 100 MHz"
+        },
+        {
+          "name": "rst_n",
+          "direction": "in",
+          "width": 1,
+          "description": "Asynchronous active-low reset"
+        },
+        {
+          "name": "load_en",
+          "direction": "in",
+          "width": 1,
+          "description": "Serial load enable; shifts din in while high"
+        },
+        {
+          "name": "din",
+          "direction": "in",
+          "width": 1,
+          "description": "Serial data input, key MSB-first then plaintext MSB-first"
+        },
+        {
+          "name": "shift_out_en",
+          "direction": "in",
+          "width": 1,
+          "description": "Serial unload enable; shifts ciphertext out while high and done is asserted"
+        },
+        {
+          "name": "dout",
+          "direction": "out",
+          "width": 1,
+          "description": "Serial data output, ciphertext MSB-first"
+        },
+        {
+          "name": "done",
+          "direction": "out",
+          "width": 1,
+          "description": "Asserted when ciphertext is fully computed; held until reset or new load"
+        }
+      ],
+      "params": {
+        "BLOCK_BITS": 64,
+        "CLK_PERIOD_NS": 10,
+        "ENCRYPT_CYCLES": 32,
+        "KEY_BITS": 80,
+        "LOAD_CYCLES": 144,
+        "ROUNDS": 31,
+        "UNLOAD_CYCLES": 64
+      },
+      "depends_on": []
+    }
+  ],
+  "rationale": "The spec explicitly mandates a single flat Verilog module with no sub-modules. All functional blocks (FSM, load/unload shift registers, bit/round counters, addRoundKey XOR, 16-nibble S-box lookup, 64-bit pLayer permutation, and key schedule rotation/S-box/counter-XOR) are inlined as combinational logic and always blocks inside the one present80 module."
+}

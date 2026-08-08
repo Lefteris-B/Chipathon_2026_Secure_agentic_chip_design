@@ -1,0 +1,97 @@
+# Demo config: real DockerSandbox over IIC-OSIC-TOOLS, plus a real
+# LiteLLM-routed model registry.
+#
+# Re-pin the digest whenever the image tag rolls forward:
+#
+#   python -m chip_agent.tools.image pin \
+#       --config configs/demo-counter.yaml \
+#       --image hpretl/iic-osic-tools \
+#       --tag chipathon26
+#
+# Live routing (F10.4):
+#
+# The ``routing`` block below is empty by default, so ``cmd_run`` will
+# refuse to start until you point it at a real model registry — either
+# by uncommenting one of the examples here or by overriding via env vars
+# (``CHIP_AGENT_ROUTING__REGISTRY__<key>__PROVIDER=anthropic``, etc.).
+#
+# Each provider needs its own API-key env var to be present:
+#
+#   anthropic    -> ANTHROPIC_API_KEY
+#   openai       -> OPENAI_API_KEY
+#   ollama       -> no key; the daemon must be reachable at endpoint
+#
+# Example registries are pinned at the bottom of this file under
+# ``# routing: |- example``; copy them into the ``routing:`` block and
+# adjust ``model:`` / per-task bindings to taste.
+
+paths:
+  runs_dir: runs
+  store_db: runs/store.sqlite
+
+constraints:
+  pdk: gf180mcuD
+  std_cell_lib: gf180mcu_fd_sc_mcu7t5v0
+  target_clock_ns: 10.0
+  # 0.3 = LibreLane closes the F9.5-templated counter cleanly with
+  # this utilization at the 10 ns clock; tighter values (0.5+) lose density
+  # margin on the small design and fail at floorplan. Tune up only after
+  # profiling a fresh design.
+  target_utilization: 0.3
+
+budgets:
+  cost_budget_usd: 5.0
+  max_attempts: 3
+  max_react_steps: 6
+  global_feedback_budget: 2
+
+# The IIC-OSIC-TOOLS image's entrypoint expects ``--skip`` to short-circuit
+# the VNC bootstrap and exec the supplied command directly inside the
+# container's PATH. Update the digest with `python -m chip_agent.tools.image pin`.
+sandbox:
+  image: hpretl/iic-osic-tools
+  image_tag: chipathon26
+  image_digest: sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4
+  cpu_limit: 4.0
+  memory_limit_gb: 8.0
+  # 30 min covers a full LibreLane flow on the counter — F9.2's old
+  # 600s killed the flow ~half-way through routing. Bump only if a real
+  # block needs longer; profile first.
+  time_limit_s: 1800
+  command_prefix: ["--skip"]
+
+routing:
+  registry: {}
+  loops: {}
+  tasks: {}
+
+# ---------------------------------------------------------------------------
+# Example: live LiteLLM registry for the F10.4 / F11.x flows.
+#
+# Copy the body into the ``routing:`` block above (replacing the empty
+# defaults). The keys ("frontier", "local-coder") are arbitrary handles
+# you cross-reference in the per-task bindings.
+#
+# ANTHROPIC_API_KEY must be set in the environment to use ``frontier``;
+# ``local-coder`` reaches Ollama at the endpoint URL — no key needed.
+# ---------------------------------------------------------------------------
+#
+# routing:
+#   registry:
+#     frontier:
+#       provider: anthropic
+#       model: claude-sonnet-4-6
+#     local-coder:
+#       provider: ollama
+#       model: qwen2.5-coder:14b
+#       endpoint: http://localhost:11434
+#   loops:
+#     inner: {model: local-coder, temperature: 0.6, n: 3}
+#     outer: {model: frontier,    temperature: 0.2, n: 1}
+#   tasks:
+#     spec_intake: {model: frontier, temperature: 0.0, n: 1}
+#     plan:        {model: frontier, temperature: 0.0, n: 1}
+#     rtl_gen:     {model: local-coder, temperature: 0.4, n: 1}
+#     rtl_repair:  {model: local-coder, temperature: 0.4, n: 1}
+#     tb_gen:      {model: local-coder, temperature: 0.2, n: 1}
+#     diagnose:    {model: frontier,    temperature: 0.0, n: 1}

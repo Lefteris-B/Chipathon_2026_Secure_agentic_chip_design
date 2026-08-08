@@ -1,0 +1,11 @@
+{
+  "DESIGN_NAME": "present80",
+  "DESIGN_DIR": ".",
+  "VERILOG_FILES": ["present80.v"],
+  "PDK": "gf180mcuD",
+  "STD_CELL_LIBRARY": "gf180mcu_fd_sc_mcu7t5v0",
+  "FP_CORE_UTIL": 20.0,
+  "CLOCK_PERIOD": 10.0,
+  "CLOCK_PORT": "clk",
+  "PL_TARGET_DENSITY": 0.55
+}
