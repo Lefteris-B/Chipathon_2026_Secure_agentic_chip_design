@@ -16,4 +16,4 @@ project:
   team: "SystemsGenesys"                       # Your Team name
   discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
   description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
-  lvs_config: "PRESENT80_CYPHER_POC/lvs/present80/lvs_config.json"
+  lvs_config: "present80_e2e/lvs/lvs_config.json"

@@ -1,0 +1,151 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram id="present80" name="PRESENT-80 block diagram">
+    <mxGraphModel dx="1486" dy="873" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=18;fontColor=#1A1A1A;" value="PRESENT-80 — iterative encryption core (64-bit block, 80-bit key, 31 rounds), bit-serial I/O on gf180mcuD" vertex="1">
+          <mxGeometry height="28" width="1400" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;align=center;fontStyle=2;fontSize=11;fontColor=#4D4D4D;" value="Iterative datapath: 1 round / clock × 31 rounds. 7 physical pins (a parallel key/block interface would need ~212). Load 144 cycles (key 80 then plaintext 64, MSB-first); unload 64 cycles." vertex="1">
+          <mxGeometry height="20" width="1400" x="40" y="52" as="geometry" />
+        </mxCell>
+        <mxCell id="clk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;" value="clk" vertex="1">
+          <mxGeometry height="34" width="90" x="40" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="rst_n" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=10;" value="rst_n (async, active-low)" vertex="1">
+          <mxGeometry height="34" width="130" x="40" y="344" as="geometry" />
+        </mxCell>
+        <mxCell id="load_en" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;" value="load_en" vertex="1">
+          <mxGeometry height="34" width="90" x="40" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="din" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=10;" value="din (serial in)" vertex="1">
+          <mxGeometry height="34" width="110" x="40" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="shift_out_en" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=10;" value="shift_out_en" vertex="1">
+          <mxGeometry height="34" width="120" x="40" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="done" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" value="done (out)" vertex="1">
+          <mxGeometry height="34" width="100" x="1360" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="dout" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;" value="dout (serial out)" vertex="1">
+          <mxGeometry height="34" width="120" x="1360" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="fsm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;fontStyle=1;" value="Control FSM&#xa;idle → load → run → done → unload&#xa;(sequences load / round / unload phases)" vertex="1">
+          <mxGeometry height="120" width="330" x="520" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="round_ctr" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" value="round_ctr (5-bit)&#xa;1 … 31" vertex="1">
+          <mxGeometry height="52" width="180" x="890" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="load_cnt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" value="load_cnt: 0 … 143" vertex="1">
+          <mxGeometry height="44" width="180" x="890" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="unload_cnt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" value="unload_cnt: 0 … 63" vertex="1">
+          <mxGeometry height="44" width="180" x="890" y="262" as="geometry" />
+        </mxCell>
+        <mxCell id="serialload" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="Serial load (MSB-first)&#xa;shift chain: {key_reg, state} shift left 1, tail ← din&#xa;key(80) then plaintext(64)" vertex="1">
+          <mxGeometry height="90" width="250" x="210" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="key_reg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;fontStyle=1;" value="key_reg [79:0]&#xa;80-bit key register" vertex="1">
+          <mxGeometry height="64" width="250" x="210" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="state" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=11;fontStyle=1;" value="state [63:0]&#xa;64-bit block register" vertex="1">
+          <mxGeometry height="64" width="250" x="210" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="keysched" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="Key schedule update (per round)&#xa;rotate-left 61 · S-box(key[79:76]) · key[19:15] XOR round_ctr" vertex="1">
+          <mxGeometry height="64" width="430" x="560" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="addrk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="addRoundKey&#xa;state XOR key_reg[79:16]" vertex="1">
+          <mxGeometry height="64" width="160" x="560" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="sbox" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="sBoxLayer&#xa;16 × 4-bit S-box" vertex="1">
+          <mxGeometry height="64" width="160" x="750" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="player" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="pLayer&#xa;64-bit bit-permutation" vertex="1">
+          <mxGeometry height="64" width="160" x="940" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="unload" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" value="Unload shifter&#xa;dout = state[63]; state shift left 1&#xa;(while shift_out_en AND done)" vertex="1">
+          <mxGeometry height="72" width="300" x="940" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="e_clk_fsm" edge="1" parent="1" source="clk" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="fsm" value="clk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rst_fsm" edge="1" parent="1" source="rst_n" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="fsm" value="rst_n">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loaden_fsm" edge="1" parent="1" source="load_en" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="fsm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loaden_sl" edge="1" parent="1" source="load_en" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="serialload" value="load phase">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_din_sl" edge="1" parent="1" source="din" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="serialload" value="din">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sl_key" edge="1" parent="1" source="serialload" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="key_reg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sl_state" edge="1" parent="1" source="serialload" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_key_ks" edge="1" parent="1" source="key_reg" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;fontSize=9;" target="keysched" value="key">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ks_key" edge="1" parent="1" source="keysched" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;fontSize=9;exitX=0;exitY=0.5;entryX=1;entryY=0.25;" target="key_reg" value="next key">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_key_ark" edge="1" parent="1" source="key_reg" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#9673A6;fontSize=9;" target="addrk" value="round key key_reg[79:16]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_state_ark" edge="1" parent="1" source="state" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="addrk" value="state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ark_sbox" edge="1" parent="1" source="addrk" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="sbox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sbox_player" edge="1" parent="1" source="sbox" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="player">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_player_state" edge="1" parent="1" source="player" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;exitX=0.5;exitY=1;entryX=1;entryY=0.75;" target="state" value="next state">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1020" y="734" />
+              <mxPoint x="480" y="734" />
+              <mxPoint x="480" y="708" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fsm_rc" edge="1" parent="1" source="fsm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D79B00;fontSize=9;" target="round_ctr" value="enable / inc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rc_ks" edge="1" parent="1" source="round_ctr" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D79B00;fontSize=9;" target="keysched" value="round_ctr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rc_fsm" edge="1" parent="1" source="round_ctr" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D79B00;fontSize=9;dashed=1;" target="fsm" value="round == 31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fsm_done" edge="1" parent="1" source="fsm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#D79B00;fontSize=9;" target="done" value="done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_soe_unload" edge="1" parent="1" source="shift_out_en" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;" target="unload" value="unload phase">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_state_unload" edge="1" parent="1" source="state" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;fontSize=9;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="player" value="state[63]">
+          <mxGeometry relative="1" x="-0.0078" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="490" y="676" />
+              <mxPoint x="490" y="640" />
+              <mxPoint x="1020" y="640" />
+            </Array>
+            <mxPoint x="460" y="634.0026315789473" as="sourcePoint" />
+            <mxPoint x="1090" y="731.95" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_unload_dout" edge="1" parent="1" source="unload" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#333333;" target="dout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

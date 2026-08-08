@@ -1,0 +1,338 @@
+<mxfile host="app.diagrams.net" modified="2026-07-02T00:00:00.000Z" agent="NoeSI-docs" version="24.7.0" type="device">
+  <diagram id="macro" name="1 · Macro control graph">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="NoeSI — Macro control graph (verification-gated state machine)" style="text;html=1;fontSize=20;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Stages advance only on gate_ok from real verification artifacts. LLMs decide content; the graph decides flow." style="text;html=1;fontSize=13;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1520" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="spec" value="SPEC intake&#10;(natural-language chip spec)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="plan" value="PLANNER&#10;(module decomposition, budgets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="130" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rtl" value="RTL agent (fan-out per module)&#10;ReAct + CoT · two-loop repair&#10;inner: Verible lint + elaborate&#10;outer: cocotb sim → FailureDiagnosis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="540" y="120" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="integrate" value="INTEGRATE&#10;join: every module's RTL gate passes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="130" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="synth" value="SYNTH&#10;Yosys · inner: warnings/latches&#10;(equivalence — later)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="120" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="phys" value="PHYSICAL / LibreLane&#10;inner: route/DRC-lite&#10;outer: congestion / slack" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="120" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sign" value="SIGNOFF + security&#10;gate = STA ∧ DRC ∧ LVS ∧ security&#10;(conjunction of four gate_ok)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="380" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="hg" value="HUMAN gate&#10;LangGraph interrupt()&#10;HumanDecision: approve / hint / reject / override" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="710" y="360" width="280" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="gds" value="GDSII emit&#10;(mandatory human approval upstream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="380" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="done" value="DONE" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="395" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="failed" value="FAILED" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="490" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="decide" value="decide_transition()&#10;pure function of DesignState&#10;{ADVANCE, RETRY, ESCALATE,&#10;FEEDBACK_UPSTREAM, HUMAN, FAIL}" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="600" width="320" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="escalate" value="ESCALATE&#10;INNER → OUTER → HUMAN&#10;(reset attempts, next-loop model binding)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="600" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback" value="FEEDBACK_UPSTREAM&#10;(BACKEND_STAGES only)&#10;emit FailureDiagnosis target_stage=RTL&#10;decrement global_feedback_budget" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="600" width="290" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="spec" target="plan"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="plan" target="rtl"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="gate_ok (per module)" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="rtl" target="integrate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="all modules pass" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="integrate" target="synth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" value="synth clean" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="synth" target="phys"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="route clean" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="phys" target="sign"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1440" y="290" /><mxPoint x="1200" y="290" /></Array></mxGeometry></mxCell>
+        <mxCell id="e7" value="STA∧DRC∧LVS∧sec" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="sign" target="hg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="approve" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;fontSize=11;fontStyle=1;" edge="1" parent="1" source="hg" target="gds"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="gds" target="done"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="reject" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="hg" target="failed"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="500" y="520" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e11" value="RETRY (same escalation)" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;curved=1;" edge="1" parent="1" source="decide" target="rtl"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="800" y="270" /><mxPoint x="660" y="270" /></Array></mxGeometry></mxCell>
+        <mxCell id="e12" value="ESCALATE" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="decide" target="escalate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" value="FEEDBACK_UPSTREAM&#10;(PPA, from backend stages)" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="decide" target="feedback"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" value="reset RTL StageState,&#10;re-enter rtl(module)" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;dashed=1;fontSize=11;curved=1;" edge="1" parent="1" source="feedback" target="rtl"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="435" y="270" /></Array></mxGeometry></mxCell>
+        <mxCell id="e15" value="HUMAN (budget exhausted)" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="decide" target="hg"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="legend" value="Legend&#10;— solid arrows: normal ADVANCE on gate_ok&#10;— dashed arrows: control-plane transitions from decide_transition()&#10;— green: stage handlers (produce artifacts)  ·  purple: pure control decision&#10;— red: human interrupt / failure  ·  orange: escalation / cross-stage feedback&#10;— DesignState.global_feedback_budget limits PPA loops; per-stage max_attempts limits repair" style="text;html=1;align=left;verticalAlign=top;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="740" width="1520" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="micro" name="2 · Micro two-loop repair">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Inside a stage handler — the two-loop repair pattern" style="text;html=1;fontSize=20;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Cheap → expensive checks. First failing check drives one bounded repair loop. Handler runs binding gate; agent self-checks are advisory." style="text;html=1;fontSize=13;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1520" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="in" value="Entry: DesignState.head + StageState&#10;(attempts, escalation, last_failure, budget)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="260" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="router" value="ModelRouter.resolve_model(task, failure_type, escalation)&#10;→ loops.inner.model  |  loops.outer.model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="140" width="380" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent" value="ReAct + CoT agent trajectory (one attempt = one artifact)&#10;Thought → Action (cheap tool) → Observation → … → emit artifact&#10;bounded by max_react_steps  ·  advisory tool calls only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="130" width="500" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="store" value="store.put(artifact)&#10;content-addressed, append-only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="140" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="inner" value="INNER loop — syntactic (cheap)&#10;RTL: Verible lint + Verilator/iverilog elaborate&#10;SYNTH: synth warnings, inferred latches&#10;PHYSICAL: route completion, DRC-lite" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=12;fontStyle=1;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="80" y="290" width="640" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="innerRun" value="run_checks_cheap(artifact)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" vertex="1" parent="inner">
+          <mxGeometry x="30" y="60" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="innerPass" value="all gate_ok?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" vertex="1" parent="inner">
+          <mxGeometry x="330" y="55" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="innerFail" value="last_failure = first_failing.ref()&#10;attempts += 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="inner">
+          <mxGeometry x="30" y="150" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="innerBudget" value="budget_left() == 0?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="inner">
+          <mxGeometry x="330" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="innerNote" value="repair uses loops.inner.model&#10;often high-temp N-candidate&#10;deterministic checker scores winners" style="text;html=1;align=left;fontSize=10;fontStyle=2;whiteSpace=wrap;" vertex="1" parent="inner">
+          <mxGeometry x="490" y="60" width="140" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="outer" value="OUTER loop — semantic (expensive)&#10;RTL: cocotb sim → waveform/AST trace → FailureDiagnosis&#10;PHYSICAL: congestion/slack analysis  ·  SIGNOFF: STA/DRC/LVS/security" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#d79b00;fontSize=12;fontStyle=1;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="880" y="290" width="640" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="outerRun" value="run_checks_expensive(artifact)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="outer">
+          <mxGeometry x="30" y="60" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="outerDiag" value="parse trace → FailureDiagnosis&#10;(failing_signal, cycle, expected/actual,&#10;suspected_cause, nl_summary)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="outer">
+          <mxGeometry x="30" y="130" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="outerReprompt" value="re-prompt loops.outer.model&#10;against typed diagnosis&#10;(NEVER raw stdout)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;fontStyle=1;" vertex="1" parent="outer">
+          <mxGeometry x="330" y="130" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="outerNote" value="entered only when inner is clean&#10;but behavior is wrong" style="text;html=1;align=left;fontSize=10;fontStyle=2;whiteSpace=wrap;" vertex="1" parent="outer">
+          <mxGeometry x="330" y="60" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gate" value="handler runs BINDING gate&#10;stage_state.results ← [r.ref() for r in results]&#10;update head / status / last_failure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="600" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ret" value="return DesignState&#10;→ decide_transition() picks the edge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="605" width="300" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="me1" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="in" target="router"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me2" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="router" target="agent"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me3" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="agent" target="store"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me4" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="store" target="inner"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1470" y="260" /><mxPoint x="400" y="260" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="me5" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="inner" source="innerRun" target="innerPass"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me6" value="no" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;" edge="1" parent="inner" source="innerPass" target="innerFail"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me7" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="inner" source="innerFail" target="innerBudget"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me8" value="no · retry (new attempt)" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=10;" edge="1" parent="1" source="innerBudget" target="router"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="540" y="230" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="me9" value="yes: inner clean → run outer" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="innerPass" target="outerRun"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="800" y="380" /></Array></mxGeometry></mxCell>
+        <mxCell id="me10" value="fail" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;" edge="1" parent="outer" source="outerRun" target="outerDiag"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me11" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;" edge="1" parent="outer" source="outerDiag" target="outerReprompt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me12" value="new artifact attempt" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=10;" edge="1" parent="1" source="outerReprompt" target="agent"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1230" y="245" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="me13" value="yes: escalate to graph" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;fontSize=11;" edge="1" parent="inner" source="innerBudget" target="innerNote"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="me14" value="outer pass → head promoted, PASSED" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="outerRun" target="gate"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1000" y="580" /></Array></mxGeometry></mxCell>
+        <mxCell id="me15" value="budget exhausted → status FAILED_ATTEMPT" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="innerBudget" target="gate"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="500" y="580" /></Array></mxGeometry></mxCell>
+        <mxCell id="me16" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;" edge="1" parent="1" source="gate" target="ret"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="micNote" value="Invariants enforced here:&#10;• handlers NEVER decide advance/retry/escalate — only produce results&#10;• every artifact-producing attempt = one ReAct + CoT trajectory&#10;• agent reasoning traces → provenance/notes  ·  NEVER into content hash&#10;• RTL inner loop uses lint + elaborate, NEVER full synthesis&#10;• outer loop MUST emit typed FailureDiagnosis before re-prompt" style="text;html=1;align=left;verticalAlign=top;fontSize=11;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="720" width="1500" height="140" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="react" name="3 · ReAct + CoT agent">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Stage specialist — ReAct + Chain-of-Thought agent (one attempt = one artifact)" style="text;html=1;fontSize=20;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Thought → Action (cheap tool) → Observation → … → emit artifact.  bounded by max_react_steps.  advisory tool calls only." style="text;html=1;fontSize=13;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1520" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prompt" value="Prompt assembly&#10;SYSTEM: role + relevant CLAUDE.md invariants + CoT instruction&#10;         + typed tool signatures + strict output artifact schema&#10;CONTEXT: design-state slice (spec, current head if repairing,&#10;         FailureDiagnosis if semantic, constraints) — refs resolved to content" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="500" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="thought" value="Thought (CoT)&#10;step-by-step reasoning&#10;→ captured to Langfuse + provenance.notes&#10;→ NOT part of content hash" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="620" y="140" width="260" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="action" value="Action&#10;one typed tool call from the agent's allow-list:&#10;lint(rtl) · elaborate(rtl) · trace(sim) · quick simulate&#10;(cheap / read-only / diagnostic only)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="140" width="340" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="obs" value="Observation&#10;structured tool result&#10;(passed / metrics / violations)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="150" width="230" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bounded" value="step_count &lt; max_react_steps&#10;AND agent not confident yet?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="330" width="280" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="emit" value="Final: emit stage artifact&#10;conforming to the artifact schema&#10;(rtl.v · synth_netlist · placed_layout · …)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="345" width="340" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="handler" value="Return to stage handler&#10;handler runs BINDING gate&#10;(agent's self-assessment is ignored here)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="345" width="340" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tools" value="Agent's allow-list = SUBSET of tool services&#10;• cheap: Verible lint, iverilog/Verilator elaborate&#10;• diagnostic: trace parser, waveform reader&#10;• sparingly: quick cocotb smoke sim&#10;&#10;NEVER available to the agent:&#10;• the binding stage checker (that's the handler's)&#10;• full LibreLane physical flow&#10;• any tool that would count toward the gate result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="510" width="500" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="which" value="Which model runs the agent?&#10;(resolved by ModelRouter — see model_routing.md)&#10;• generation (first pass) → task's bound model&#10;• syntactic repair → loops.inner.model&#10;• semantic repair → loops.outer.model&#10;multi-candidate sampling scored by deterministic cheap checks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="510" width="470" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bounds" value="Two nested loops — keep distinct&#10;• ReAct loop (intra-attempt, inside agent) — max_react_steps&#10;• Control-graph loop (inter-attempt, outside) — decide_transition&#10;&#10;Exceeding max_react_steps ends the attempt cleanly&#10;and yields the best artifact so far.&#10;The graph decides advance/retry/escalate afterward." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="510" width="470" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="re1" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="prompt" target="thought"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="re2" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;" edge="1" parent="1" source="thought" target="action"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="re3" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;" edge="1" parent="1" source="action" target="obs"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="re4" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="obs" target="bounded"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="re5" value="yes: next step" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="bounded" target="thought"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="750" y="385" /><mxPoint x="750" y="190" /></Array></mxGeometry></mxCell>
+        <mxCell id="re6" value="no: finalize" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="bounded" target="emit"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="re7" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="emit" target="handler"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="footer" value="Determinism boundary preserved:  agent tool calls contribute to artifact PRODUCTION  ·  the control decision is a separate deterministic read of the handler's gate." style="text;html=1;fontSize=12;fontStyle=2;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="1520" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="planes" name="4 · Four planes">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="NoeSI — the four planes (with the trust boundary)" style="text;html=1;fontSize=20;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Untrusted inputs → control plane (abstracted state) → typed tool gateway + human gate → sandboxed tools + PDK.  Audit log spans everything." style="text;html=1;fontSize=13;align=center;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1520" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="untrusted" value="UNTRUSTED INPUTS&#10;natural-language spec · external IP / RAG · chat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="130" width="330" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="controlPlane" value="CONTROL PLANE" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;startSize=32;" vertex="1" parent="1">
+          <mxGeometry x="470" y="120" width="640" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="langgraph" value="LangGraph StateGraph&#10;• stage nodes + gates + escalation + feedback&#10;• checkpointing + interrupt()&#10;• DesignState carries refs + StageState only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="controlPlane">
+          <mxGeometry x="20" y="50" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="decide" value="decide_transition()&#10;pure function of the blackboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="controlPlane">
+          <mxGeometry x="20" y="160" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="litellm" value="LiteLLM router (model_routing.md)&#10;• named registry (Ollama local + frontier)&#10;• per-loop bindings loops.inner / loops.outer&#10;• content-addressed cache + cost guard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=10;" vertex="controlPlane">
+          <mxGeometry x="340" y="50" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="specialists" value="Stage specialists (agents.md)&#10;RTL · Physical · Signoff · Security&#10;ReAct + CoT · bounded" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="controlPlane">
+          <mxGeometry x="340" y="160" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="toolPlane" value="TOOL PLANE — typed sandboxed services (tool_contracts.md)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;startSize=32;" vertex="1" parent="1">
+          <mxGeometry x="80" y="450" width="1030" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="image" value="IIC-OSIC-TOOLS image (PINNED by digest)&#10;docker run --rm --network none  ·  cpu/mem/time caps  ·  design dir mounted&#10;bundles: LibreLane · Yosys · OpenROAD · Magic · Netgen · KLayout · Verilator · iverilog · cocotb · Verible · OpenSTA + sky130A PDK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="toolPlane">
+          <mxGeometry x="20" y="45" width="990" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="typedSvc" value="Typed service = model-free.  Returns Pydantic result (passed / metrics / violations / gate_ok).  &#10;Maps tool errors onto the stable VIOLATION TAXONOMY.  Only a parser sees raw stdout." style="text;html=1;whiteSpace=wrap;fontSize=11;fontStyle=2;align=center;" vertex="1" parent="toolPlane">
+          <mxGeometry x="20" y="115" width="990" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dataPlane" value="DATA PLANE — the blackboard (design_state.py)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;startSize=32;" vertex="1" parent="1">
+          <mxGeometry x="80" y="670" width="720" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="state" value="DesignState (in LangGraph checkpoint)&#10;• ArtifactRef + StageState only — small, JSON-round-tripping&#10;• stages: dict[Stage, StageState] (design-level)&#10;• modules: dict[str, ModuleState]&#10;• global_feedback_budget" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="dataPlane">
+          <mxGeometry x="20" y="50" width="330" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="store" value="ArtifactStore&#10;• content-addressed dir + SQLite/DuckDB index&#10;• append-only  ·  NEVER mutate  ·  new version = new hash&#10;• Pydantic v2 typed artifacts (rtl, synth_netlist, layout,&#10;   sim_report, sta_report, drc_report, lvs_report,&#10;   security_report, FailureDiagnosis, HumanDecision)&#10;• content hash EXCLUDES lifecycle + reasoning traces" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="dataPlane">
+          <mxGeometry x="370" y="50" width="330" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="obsPlane" value="OBSERVABILITY PLANE" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;startSize=32;" vertex="1" parent="1">
+          <mxGeometry x="830" y="670" width="720" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="langfuse" value="Langfuse traces&#10;• every ReAct step&#10;• every tool invocation&#10;• every model call (prompt/completion/latency/cost)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="obsPlane">
+          <mxGeometry x="20" y="50" width="330" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="audit" value="Signed hash-chained audit log&#10;spans all stages · replay from log&#10;provenance per artifact:&#10;• container image digest&#10;• model + seed + temperature&#10;• config hash · inputs (refs)&#10;• reasoning notes (never in content hash)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="obsPlane">
+          <mxGeometry x="370" y="50" width="330" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="human" value="HUMAN GATE&#10;mandatory before GDSII&#10;HumanDecision artifact" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="130" width="330" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="trustLine" value="TRUST BOUNDARY" style="text;html=1;fontSize=14;fontStyle=1;align=center;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="230" width="1420" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="trustBar" value="" style="shape=line;strokeColor=#b85450;strokeWidth=3;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="260" width="1420" height="10" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pe1" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;" edge="1" parent="1" source="untrusted" target="controlPlane"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe2" style="endArrow=classic;html=1;strokeColor=#333;strokeWidth=2;" edge="1" parent="1" source="controlPlane" target="human"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe3" value="typed calls only" style="endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="controlPlane" target="toolPlane"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe4" value="ArtifactRef R/W" style="endArrow=classic;endFill=1;startArrow=classic;startFill=1;html=1;strokeColor=#d6b656;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="controlPlane" target="dataPlane"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe5" value="artifacts back" style="endArrow=classic;html=1;strokeColor=#d6b656;strokeWidth=2;fontSize=11;" edge="1" parent="1" source="toolPlane" target="dataPlane"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe6" value="events" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="controlPlane" target="obsPlane"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1400" y="410" /></Array></mxGeometry></mxCell>
+        <mxCell id="pe7" value="events" style="endArrow=classic;html=1;strokeColor=#9673a6;strokeWidth=2;dashed=1;fontSize=11;" edge="1" parent="1" source="toolPlane" target="obsPlane"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="footer2" value="Security thesis: sandboxed, reproducible, verification-gated — NOT confidential.  Open-source, sky130, no secrets." style="text;html=1;fontSize=12;fontStyle=2;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="940" width="1520" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
