@@ -69,13 +69,9 @@ Deterministic latency ≈ 144 + 32 + 64 ≈ 240 cycles.
 | LVS (Netgen)          | ✅ 0 mismatches |
 | STA (OpenSTA)         | ✅ 0 setup / 0 hold violations at the signoff corner |
 | Security gate         | ✅ pass |
-| Detailed routing      | ✅ `routed` (no DRT-0073 — routed cleanly at 20 % util) |
+| Detailed routing      | ✅ `routed` (routed cleanly at 20 % util) |
 
-> Note on utilization: this design was floorplanned at **20 %** utilization.
-> At the repo-default 30 %, LibreLane's detailed router fails with
-> `DRT-0073 No access point for clkbuf…/I` on this netlist (6,350 cells,
-> a bigger clock tree than a minimal implementation). 20 % gives the router
-> room; throughput is unaffected since the interface is bit-serial.
+
 
 ## Functional verification — 4/4 standard vectors
 
@@ -116,7 +112,4 @@ chip-agent resume --design-id <design_id> \
                  --config configs/frontier-opus-rtl.yaml --sandbox docker
 ```
 
-RTL correctness depends on the model; Opus 4.8 produced correct,
-synthesizable RTL here. See `docs/FEATURES.md` M24 for the follow-ups this
-run motivated (synth-strict inner-loop elaboration; escalate-don't-crash on
-a no-DEF routing failure).
+
