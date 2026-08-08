@@ -1,0 +1,16 @@
+{
+    "TOP_SOURCE": "your_design_name",
+    "TOP_LAYOUT": "your_design_name",
+    "LAYOUT_FILE": "$UPRJ_ROOT/gds/your_design_name.gds",
+    "LVS_SPICE_FILES": [
+        "$UPRJ_ROOT/xschem/your_design_name.spice"
+    ],
+    "LVS_VERILOG_FILES": [
+        "$UPRJ_ROOT/verilog/rtl/child_module.v",
+        "$UPRJ_ROOT/verilog/rtl/your_design_name.v"
+    ],
+    "INCLUDE_CONFIGS": [],
+    "EXTRACT_FLATGLOB": [],
+    "LVS_FLATTEN": [],
+    "LVS_NOFLATTEN": []
+}
