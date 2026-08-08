@@ -5,10 +5,10 @@
     ],
     "TOP_SOURCE": "present80",
     "TOP_LAYOUT": "$TOP_SOURCE",
-    "LAYOUT_FILE": "$UPRJ_ROOT/gds/present80.gds",
+    "LAYOUT_FILE": "$UPRJ_ROOT/gds/present80_top.gds",
     "LVS_SPICE_FILES": [],
     "LVS_VERILOG_FILES": [
-        "$UPRJ_ROOT/verilog/gl/present80.v"
+        "$UPRJ_ROOT/verilog/gl/present80_top.pnl.v"
     ],
     "EXTRACT_FLATGLOB": [],
     "EXTRACT_ABSTRACT": [],
