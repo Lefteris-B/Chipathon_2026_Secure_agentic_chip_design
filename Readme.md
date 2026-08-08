@@ -312,9 +312,9 @@ setup closure is a remaining task (see roadmap).
 
 | Name | Role |
 |---|---|
-| _[Member One — Full Name]_ | Team Lead — agentic flow & control graph |
-| _[Member Two — Full Name]_ | RTL & verification |
-| _[Member Three — Full Name]_ | Physical design & signoff |
+| _[Eleftherios Batzolis]_ | 
+| _[Dr. Konstantinos Rantos]_ | 
+| _[Dr. Drosatos Georgios]_ | 
 
 _Template placeholders — replace with the team's real names and contacts._
 
