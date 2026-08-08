@@ -71,14 +71,8 @@ jobs:
           - os: ubuntu-22.04
             target: linux-x86_64
             archive: tar.gz
-          - os: ubuntu-22.04-arm
-            target: linux-arm64
-            archive: tar.gz
           - os: macos-13
             target: macos-x86_64
-            archive: tar.gz
-          - os: macos-14
-            target: macos-arm64
             archive: tar.gz
           - os: windows-latest
             target: windows-x86_64
