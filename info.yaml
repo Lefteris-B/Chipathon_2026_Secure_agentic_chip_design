@@ -23,7 +23,7 @@ pins:
     io_type: input_schmitt
   - name: rst_n
     io_type: input_cmos
-  - name: dinml
+  - name: din
     io_type: input_cmos
   - name: load_en
     io_type: input_cmos
