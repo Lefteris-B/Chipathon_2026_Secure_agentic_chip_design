@@ -17,3 +17,23 @@ project:
   discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
   description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
   lvs_config: "lvs_config.json"
+
+  pins:
+  - name: clk
+    io_type: input_schmitt
+  - name: rst_n
+    io_type: input_cmos
+  - name: din
+    io_type: input_cmos
+  - name: load_en
+    io_type: input_cmos
+  - name: shift_out_en
+    io_type: input_cmos
+  - name: dout
+    io_type: bidirectional
+  - name: done
+    io_type: bidirectional
+  - name: VDD
+    io_type: power
+  - name: VSS
+    io_type: ground
