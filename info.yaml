@@ -18,12 +18,12 @@ project:
   description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
   lvs_config: "lvs_config.json"
 
-  pins:
+pins:
   - name: clk
     io_type: input_schmitt
   - name: rst_n
     io_type: input_cmos
-  - name: din
+  - name: dinml
     io_type: input_cmos
   - name: load_en
     io_type: input_cmos
