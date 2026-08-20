@@ -3,11 +3,9 @@
 # LICENSE: Apache License Version 2.0
 # http://www.apache.org/licenses/
 # ----- ------ ----- ----- ------ ----- ----- ------ -----
-
 # data will be pulled from main branch of the repo.
 # please be sure that the main branch contains the data you want to submit.
 # This file will be updated with more information later
-
 # ======================================================
 # Project metadata (used for documentation / review)
 # ======================================================
@@ -17,8 +15,11 @@ project:
   discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
   description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
   lvs_config: "lvs_config.json"
-
 pins:
+  - name: VSS
+    io_type: ground
+  - name: VDD
+    io_type: power
   - name: clk
     io_type: input_schmitt
   - name: rst_n
@@ -33,7 +34,3 @@ pins:
     io_type: bidirectional
   - name: done
     io_type: bidirectional
-  - name: VDD
-    io_type: power
-  - name: VSS
-    io_type: ground
