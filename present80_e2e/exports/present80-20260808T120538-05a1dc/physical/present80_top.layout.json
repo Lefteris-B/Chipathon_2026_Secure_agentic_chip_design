@@ -1,11 +1,11 @@
 {
-  "artifact_id": "present80-20260808T120538-05a1dc.present80_top.layout",
+  "artifact_id": "present80-hardened.present80.layout",
   "version": 1,
   "kind": "layout",
-  "design_id": "present80-20260808T120538-05a1dc",
-  "module_id": "present80_top",
-  "content_hash": "sha256:f6d40001fd6765348a2a5da56f0d902d3924ef528b21f84bd476bd2f8cb0a305",
-  "status": "accepted",
+  "design_id": "present80-hardened",
+  "module_id": "present80",
+  "content_hash": "sha256:ba238a93f91c40a07dba40554cea86cc225fd979859242af44a049d042e083d0",
+  "status": "draft",
   "provenance": {
     "produced_by": "physical",
     "agent": "physical_specialist",
@@ -17,10 +17,10 @@
     "model": null,
     "inputs": [
       {
-        "artifact_id": "present80-20260808T120538-05a1dc.present80_top.netlist",
+        "artifact_id": "present80-hardened.present80.netlist",
         "version": 1,
         "kind": "netlist",
-        "content_hash": "sha256:0045cc921c6f99c03f80971c156fe7bc281285e362d42c4c93cbb38fac905538"
+        "content_hash": "sha256:f478c35b150617abaa024b1f1bb0594e180133810bcaa253cb435712def30d92"
       }
     ],
     "config_hash": null,
@@ -28,66 +28,72 @@
       "clock_period_ns": 10.0,
       "pdk": "gf180mcuD",
       "std_cell_lib": "gf180mcu_fd_sc_mcu7t5v0",
-      "target_utilization": 0.2
+      "target_utilization": 0.3
     },
     "seed": null,
     "started_at": null,
     "ended_at": null,
     "notes": null
   },
-  "created_at": "2026-08-08T12:20:14.776264Z",
+  "created_at": "2026-08-21T19:05:31.719047Z",
   "metadata": {
     "congestion_pct": 0.0,
     "multi_corner_fallback": "false",
     "stage_reached": "routed"
   },
   "def_file": {
-    "path": "81/8166e44dbbe625d9df6e1b186d7bd5f8669dadca5ba2fca16ef1ab6af5f55e1f",
-    "sha256": "8166e44dbbe625d9df6e1b186d7bd5f8669dadca5ba2fca16ef1ab6af5f55e1f",
-    "size_bytes": 1589906,
+    "path": "2f/2f12ac2d76eadc91b332aa3925256b7b1bc97abf1533e44a925269a8229a5506",
+    "sha256": "2f12ac2d76eadc91b332aa3925256b7b1bc97abf1533e44a925269a8229a5506",
+    "size_bytes": 1381465,
     "media_type": "text/x-def"
   },
   "stage_reached": "routed",
-  "die_area_um2": 168409.0,
-  "utilization_pct": 28.819200000000002,
-  "cell_count": 6350,
+  "die_area_um2": 110210.0,
+  "utilization_pct": 44.3313,
+  "cell_count": 4886,
   "congestion_pct": 0.0,
   "librelane_sdf": {
-    "path": "94/94ef0ea74650342004f49b43220cd7db73afb0eaf6de1ed55e0be894d56aac22",
-    "sha256": "94ef0ea74650342004f49b43220cd7db73afb0eaf6de1ed55e0be894d56aac22",
-    "size_bytes": 1028441,
+    "path": "4d/4ddbf0be1aa9e78e16f1c7d7cfbfaddfefbfe0fbefe6e0a8860fb2be40d43622",
+    "sha256": "4ddbf0be1aa9e78e16f1c7d7cfbfaddfefbfe0fbefe6e0a8860fb2be40d43622",
+    "size_bytes": 907205,
     "media_type": "text/x-sdf"
   },
   "librelane_drc_report": {
-    "path": "9b/9b87813a6c8073b125555736aef0b01915a8e4d41809bcb76dbdc1326a042912",
-    "sha256": "9b87813a6c8073b125555736aef0b01915a8e4d41809bcb76dbdc1326a042912",
-    "size_bytes": 3597,
+    "path": "ac/acb3455a7afbc3e66cd3becbd888249431ff20cfb94e34f8c890ebd28989e913",
+    "sha256": "acb3455a7afbc3e66cd3becbd888249431ff20cfb94e34f8c890ebd28989e913",
+    "size_bytes": 4453,
     "media_type": "text/plain"
   },
   "librelane_layout_spice": {
-    "path": "6d/6dda01682a574ff15dc0f17af491b09fcc37cc3bd3f0402d06c05aaf15e7f497",
-    "sha256": "6dda01682a574ff15dc0f17af491b09fcc37cc3bd3f0402d06c05aaf15e7f497",
-    "size_bytes": 452174,
+    "path": "53/533c6d8207c2d52e2730a53ee4661a0f82eecd9874b48c2079f42a76af4bbac2",
+    "sha256": "533c6d8207c2d52e2730a53ee4661a0f82eecd9874b48c2079f42a76af4bbac2",
+    "size_bytes": 357855,
     "media_type": "text/x-spice"
   },
   "librelane_mapped_netlist": {
-    "path": "b6/b65251c0c30e41a82e879d59bd9677245e4ad9ebc74d00b819c199a930f55d73",
-    "sha256": "b65251c0c30e41a82e879d59bd9677245e4ad9ebc74d00b819c199a930f55d73",
-    "size_bytes": 424239,
+    "path": "b6/b6bfb668de40f4696539771fd6b0ea0976c8c4e9a08ce5b689cc14afd70f4b68",
+    "sha256": "b6bfb668de40f4696539771fd6b0ea0976c8c4e9a08ce5b689cc14afd70f4b68",
+    "size_bytes": 343702,
     "media_type": "text/x-verilog"
   },
   "librelane_powered_netlist": {
-    "path": "31/3101e327ad45e585692324b7ce05b61b96fd03b409ae5c51abab0dfffae64d23",
-    "sha256": "3101e327ad45e585692324b7ce05b61b96fd03b409ae5c51abab0dfffae64d23",
-    "size_bytes": 739833,
+    "path": "07/07814bc3f6c29cd1057516468e865706ea8a7339d4e5abe63e27309a6204f732",
+    "sha256": "07814bc3f6c29cd1057516468e865706ea8a7339d4e5abe63e27309a6204f732",
+    "size_bytes": 591868,
     "media_type": "text/x-verilog"
   },
   "librelane_per_corner_timing": null,
   "librelane_per_corner_power": null,
+  "librelane_reports": {
+    "path": "e7/e7c5b6b79fdf3aba1aa494a387cbfb002109feb079f26ee55fffbac38bb5d43d",
+    "sha256": "e7c5b6b79fdf3aba1aa494a387cbfb002109feb079f26ee55fffbac38bb5d43d",
+    "size_bytes": 3192353,
+    "media_type": "application/gzip"
+  },
   "librelane_log": {
-    "path": "95/95cd09b5912ea1883f488155227741d0f642021f68fa7f38894178dfee1eedfd",
-    "sha256": "95cd09b5912ea1883f488155227741d0f642021f68fa7f38894178dfee1eedfd",
-    "size_bytes": 1137868,
+    "path": "f1/f14eb9dffaee9ab150a5cdffda22bd0fd34a671bca77f20d437f680bc416bd64",
+    "sha256": "f14eb9dffaee9ab150a5cdffda22bd0fd34a671bca77f20d437f680bc416bd64",
+    "size_bytes": 949308,
     "media_type": "text/plain"
   }
 }

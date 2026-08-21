@@ -1,11 +1,11 @@
 {
-  "artifact_id": "present80-20260808T120538-05a1dc.present80_top.gds",
+  "artifact_id": "present80-hardened.present80.gds",
   "version": 1,
   "kind": "gdsii",
-  "design_id": "present80-20260808T120538-05a1dc",
-  "module_id": "present80_top",
-  "content_hash": "sha256:599e8f7240d621fdb84a2cc83b728d2b8e163d5058d1011932408e2fb7f5a89f",
-  "status": "accepted",
+  "design_id": "present80-hardened",
+  "module_id": "present80",
+  "content_hash": "sha256:088dae0d4c8508753d88bf4d4460601a468126ebb12964d6ba4e430d0809aa6f",
+  "status": "draft",
   "provenance": {
     "produced_by": "gdsii",
     "agent": "gdsii_specialist",
@@ -17,10 +17,10 @@
     "model": null,
     "inputs": [
       {
-        "artifact_id": "present80-20260808T120538-05a1dc.present80_top.layout",
+        "artifact_id": "present80-hardened.present80.layout",
         "version": 1,
         "kind": "layout",
-        "content_hash": "sha256:f6d40001fd6765348a2a5da56f0d902d3924ef528b21f84bd476bd2f8cb0a305"
+        "content_hash": "sha256:ba238a93f91c40a07dba40554cea86cc225fd979859242af44a049d042e083d0"
       }
     ],
     "config_hash": null,
@@ -30,17 +30,17 @@
     "ended_at": null,
     "notes": null
   },
-  "created_at": "2026-08-08T12:21:35.709930Z",
+  "created_at": "2026-08-21T19:05:44.258743Z",
   "metadata": {
     "cells_written": 0,
     "stage_reached": "routed"
   },
   "gds": {
-    "path": "45/45b4db1bd96cb979ea2fce0991dbba5d67588195ab7ee9c27de660e7d41c5d6b",
-    "sha256": "45b4db1bd96cb979ea2fce0991dbba5d67588195ab7ee9c27de660e7d41c5d6b",
-    "size_bytes": 1106654,
+    "path": "87/8778468475e9a74db4dd771bf88adc12ae7825462fe3430f04baf53407026af4",
+    "sha256": "8778468475e9a74db4dd771bf88adc12ae7825462fe3430f04baf53407026af4",
+    "size_bytes": 1007698,
     "media_type": "application/octet-stream; format=gdsii"
   },
-  "die_area_um2": 168409.0,
-  "cell_count": 6350
+  "die_area_um2": 110210.0,
+  "cell_count": 4886
 }
