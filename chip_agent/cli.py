@@ -1444,6 +1444,29 @@ def _export_design_stage(
                 root / "physical" / f"{top}.layout.json",
                 art.model_dump_json(indent=2),
             )
+            # F24: mirror the LibreLane report/log bundle so the native
+            # OpenSTA/Magic/OpenROAD reports are hand-inspectable next to
+            # the DEF instead of only living as a blob in the store.
+            if art.librelane_reports is not None:
+                reports_blob = _try_get_blob(store, art.librelane_reports)
+                if reports_blob is not None:
+                    _atomic_bytes(
+                        root / "physical" / f"{top}.librelane_reports.tar.gz",
+                        reports_blob,
+                    )
+            # Mirror the harvested LibreLane netlists next to the DEF: the
+            # sky130-mapped netlist (SIGNOFF's STA input) and the powered
+            # PNL with VPWR/VGND pins (SIGNOFF's LVS input). Both otherwise
+            # live only as content-hash blobs in the store.
+            for netlist_ref, suffix in (
+                (art.librelane_mapped_netlist, "mapped.nl.v"),
+                (art.librelane_powered_netlist, "pnl.v"),
+            ):
+                if netlist_ref is None:
+                    continue
+                nl_blob = _try_get_blob(store, netlist_ref)
+                if nl_blob is not None:
+                    _atomic_bytes(root / "physical" / f"{top}.{suffix}", nl_blob)
         elif isinstance(art, GDSIIArtifact):
             blob = _try_get_blob(store, art.gds)
             if blob is not None:

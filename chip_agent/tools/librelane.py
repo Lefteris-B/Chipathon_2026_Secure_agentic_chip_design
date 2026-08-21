@@ -19,8 +19,10 @@ sandbox without touching this module.
 
 from __future__ import annotations
 
+import io
 import json
 import re
+import tarfile
 import tempfile
 import warnings
 from dataclasses import dataclass, field
@@ -94,6 +96,14 @@ class PhysicalConfig:
     # them through ``apply_repair_delta()`` to produce the active config.
     pl_target_density: float | None = None
     synth_strategy: str | None = None
+    # Post-CTS resizer setup-slack target (ns), emitted as
+    # ``PL_RESIZER_SETUP_SLACK_MARGIN``. The resizer optimises at the
+    # nominal corner only, so raising this over-constrains nominal timing
+    # (up-sizes drivers, adds buffers) to buy headroom that carries to the
+    # slow (ss) corner LibreLane never repairs directly. ``None`` keeps the
+    # flow default (0.05 ns). Large values inflate area/utilisation — pair
+    # with a lower ``target_utilization`` if placement overflows.
+    resizer_setup_slack_margin: float | None = None
 
     def retuned(
         self,
@@ -120,6 +130,7 @@ class PhysicalConfig:
             sta_report_power=self.sta_report_power,
             pl_target_density=self.pl_target_density,
             synth_strategy=self.synth_strategy,
+            resizer_setup_slack_margin=self.resizer_setup_slack_margin,
         )
 
 
@@ -331,6 +342,10 @@ def build_librelane_config(
         cfg["PL_TARGET_DENSITY"] = config.pl_target_density
     if config.synth_strategy is not None:
         cfg["SYNTH_STRATEGY"] = config.synth_strategy
+    # Over-constrain the post-CTS resizer's nominal-corner setup target to
+    # buy slow-corner (ss) headroom (see PhysicalConfig field docstring).
+    if config.resizer_setup_slack_margin is not None:
+        cfg["PL_RESIZER_SETUP_SLACK_MARGIN"] = config.resizer_setup_slack_margin
     return cfg
 
 
@@ -728,6 +743,17 @@ class LibreLanePhysicalService:
             )
             if harvested.powered_netlist_bytes else None
         )
+        # F24: stash the LibreLane report/log bundle so a completed run's
+        # native OpenSTA/Magic/OpenROAD reports survive the ephemeral
+        # sandbox workdir. Post-mortem debugging no longer depends on
+        # rerunning the flow. Diagnostic only — excluded from the layout's
+        # content hash (see LayoutArtifact._NON_CONTENT_FIELDS).
+        reports_ref = (
+            self.store.put_blob(
+                harvested.reports_tar_bytes, media_type="application/gzip",
+            )
+            if harvested.reports_tar_bytes else None
+        )
         # F21.2: stash the per-corner timing + power blobs so SIGNOFF's
         # dispatch can build a MultiCornerSTAReport instead of today's
         # single-corner TimingReport. Empty dicts when the opt-in wasn't
@@ -763,6 +789,7 @@ class LibreLanePhysicalService:
             librelane_powered_netlist=powered_ref,
             librelane_per_corner_timing=per_corner_timing_refs,
             librelane_per_corner_power=per_corner_power_refs,
+            librelane_reports=reports_ref,
             librelane_log=log_ref,
             provenance=Provenance(
                 produced_by=Stage.PHYSICAL,
@@ -808,6 +835,12 @@ class HarvestedOutputs:
     layout_spice_bytes: bytes = b""
     mapped_netlist_bytes: bytes = b""
     powered_netlist_bytes: bytes = b""
+    # F24: gzip tarball of the LibreLane run's report/log tree (per-step
+    # ``reports/`` dirs + ``*.rpt`` + ``metrics.json``/``resolved.json``),
+    # captured before the sandbox workdir is torn down. Empty when the run
+    # dir was absent or held no report files. Diagnostic only — never part
+    # of the layout's design identity.
+    reports_tar_bytes: bytes = b""
     # F21.2: per-corner STA reports keyed by corner tag (tt/ss/ff). Empty
     # dict when ``sta_corners`` was unset OR when LibreLane's multi-corner
     # STA tripped the sky130A segfault (OpenROAD #6227) — the segfault
@@ -1023,16 +1056,87 @@ def _harvest_outputs(
     stage_reached: str | None = None
     if def_bytes:
         stage_reached = "routed"
+    # F24: snapshot the report/log tree while the workdir is still alive.
+    reports_tar_bytes = _archive_report_tree(work_path, run_tag=run_tag)
     return HarvestedOutputs(
         def_bytes=def_bytes, metrics=metrics, stage_reached=stage_reached,
         sdf_bytes=sdf_bytes, drc_report_bytes=drc_report_bytes,
         layout_spice_bytes=layout_spice_bytes,
         mapped_netlist_bytes=mapped_netlist_bytes,
         powered_netlist_bytes=powered_netlist_bytes,
+        reports_tar_bytes=reports_tar_bytes,
         per_corner_timing=per_corner_timing,
         per_corner_power=per_corner_power,
         multi_corner_fallback=multi_corner_fallback,
     )
+
+
+# F24: which files from the LibreLane run tree are worth archiving. The
+# ephemeral sandbox workdir is torn down when the ``with
+# tempfile.TemporaryDirectory`` block exits, so anything not harvested here
+# is gone forever (see proj_gdsii / the present80_e2e post-mortem: only the
+# derived typed signoff JSONs survived, never LibreLane's own reports). We
+# keep the human-readable report/log surface — the per-step ``reports/``
+# dirs, every ``*.rpt``, and the consolidated ``metrics.json`` /
+# ``resolved.json`` — and deliberately skip the heavy layout binaries
+# (DEF/GDS/ODB/LEF/SPICE/netlists) because those are either harvested
+# separately as first-class blobs or too large to belong in a debug bundle.
+_REPORT_ARCHIVE_SUFFIXES = frozenset(
+    {".rpt", ".log", ".json", ".yaml", ".yml", ".rst", ".txt", ".tcl", ".sdc"}
+)
+# Guard against a pathological single file (e.g. a multi-MB klayout JSON)
+# bloating the bundle. Anything larger is skipped; the tarball stays a
+# lightweight post-mortem aid, not a second copy of the layout.
+_REPORT_ARCHIVE_MAX_FILE_BYTES = 8 * 1024 * 1024
+
+
+def _archive_report_tree(work_path: Path, *, run_tag: str) -> bytes:
+    """Bundle the LibreLane run's report/log tree into a gzip tarball.
+
+    Called while the sandbox workdir still exists. Walks
+    ``runs/<run_tag>/`` and packs every file whose suffix is in
+    :data:`_REPORT_ARCHIVE_SUFFIXES` or that lives under a ``reports/``
+    directory, preserving the run-relative layout so the extracted tree
+    mirrors what LibreLane wrote. Returns ``b""`` when the run dir is
+    absent (stub flow, startup failure) or held no report files — the
+    caller treats empty as "no bundle captured", same as the other
+    optional harvest fields.
+    """
+    run_dir = work_path / "runs" / run_tag
+    if not run_dir.is_dir():
+        return b""
+
+    members: list[tuple[Path, str]] = []
+    for path in sorted(run_dir.rglob("*")):
+        if not path.is_file():
+            continue
+        in_reports_dir = "reports" in path.relative_to(run_dir).parts
+        if path.suffix not in _REPORT_ARCHIVE_SUFFIXES and not in_reports_dir:
+            continue
+        try:
+            if path.stat().st_size > _REPORT_ARCHIVE_MAX_FILE_BYTES:
+                continue
+        except OSError:
+            continue
+        members.append((path, path.relative_to(run_dir).as_posix()))
+
+    if not members:
+        return b""
+
+    buf = io.BytesIO()
+    # Fixed mtime keeps the tarball bytes stable for identical report
+    # content; the layout's content hash excludes this field anyway, but a
+    # deterministic bundle avoids needless churn in the store.
+    fixed_mtime = 0
+    with tarfile.open(fileobj=buf, mode="w:gz", format=tarfile.PAX_FORMAT) as tar:
+        for path, arcname in members:
+            info = tar.gettarinfo(str(path), arcname=arcname)
+            info.mtime = fixed_mtime
+            info.uid = info.gid = 0
+            info.uname = info.gname = ""
+            with path.open("rb") as fh:
+                tar.addfile(info, fh)
+    return buf.getvalue()
 
 
 def _find_first(

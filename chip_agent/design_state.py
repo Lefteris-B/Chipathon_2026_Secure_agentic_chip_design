@@ -649,6 +649,19 @@ class LayoutArtifact(Artifact):
     # power signal); F21.3's tuner can still reason over slack alone.
     librelane_per_corner_power: dict[str, BlobRef] | None = None
 
+    # F24: gzip tarball of the LibreLane run's report/log tree (per-step
+    # ``reports/`` dirs, ``*.rpt`` slack/DRC reports, ``metrics.json``,
+    # ``resolved.json``). Captured before the sandbox workdir is destroyed
+    # so a completed run's native OpenSTA/Magic/OpenROAD reports survive for
+    # post-mortem inspection instead of vanishing with the ephemeral temp
+    # dir (the present80_e2e post-mortem: only the derived signoff JSONs had
+    # been persisted). ``None`` when the harvest found no report files
+    # (stub flow, startup failure). Diagnostic output, NOT part of the
+    # layout's design identity — excluded from the content hash below, same
+    # rationale as ``librelane_log``: the bundled reports carry wall-clock
+    # timestamps, so two reproductions of the same design differ byte-wise.
+    librelane_reports: BlobRef | None = None
+
     # F18: raw LibreLane stdout+stderr captured from the sandbox run, so a
     # silent flow failure (e.g. config rejected at parse time, container
     # OOM, missing PDK) leaves a readable diagnostic trail. The driver
@@ -673,6 +686,9 @@ class LayoutArtifact(Artifact):
     _NON_CONTENT_FIELDS = {
         "artifact_id", "content_hash", "provenance", "created_at",
         "status", "version", "metadata", "librelane_log",
+        # F24: report/log bundle is post-mortem diagnostic output whose
+        # bytes vary run-to-run (log timestamps), not design identity.
+        "librelane_reports",
         # F21.2: per-corner timing/power reports are analysis OUTPUT
         # over the sealed layout, not part of the layout's design
         # identity. The canonical hash for that analysis lives on
