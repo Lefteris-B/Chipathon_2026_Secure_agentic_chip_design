@@ -1,3 +1,8 @@
+> **UPDATE (embedded):** The power connectors are now **embedded inside**
+> `gds/D10_D.gds` — placed and welded to the PDN in the macro flow (net-aware
+> macro grid via + LVS connect-by-label). The macro is self-contained and
+> LVS-clean; these standalone cells are kept for reference / re-integration.
+
 # D10_D power connectors (VSS/VDD Metal2 bridge)
 
 Standalone power-connector cells for integration-time placement, following the
