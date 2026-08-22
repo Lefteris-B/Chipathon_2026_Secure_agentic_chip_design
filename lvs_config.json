@@ -3,12 +3,12 @@
     "INCLUDE_CONFIGS": [
         "$LVS_ROOT/tech/$PDK/lvs_config.base.json"
     ],
-    "TOP_SOURCE": "present80",
+    "TOP_SOURCE": "D10_D",
     "TOP_LAYOUT": "$TOP_SOURCE",
     "LAYOUT_FILE": "$UPRJ_ROOT/gds/$TOP_LAYOUT.gds",
     "LVS_SPICE_FILES": [],
     "LVS_VERILOG_FILES": [
-        "$UPRJ_ROOT/verilog/gl/present80_top.pnl.v"
+        "$UPRJ_ROOT/verilog/gl/D10_D.pnl.v"
     ],
     "EXTRACT_FLATGLOB": [],
     "EXTRACT_ABSTRACT": [],
