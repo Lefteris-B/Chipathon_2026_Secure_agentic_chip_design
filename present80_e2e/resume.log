@@ -1,8 +1,0 @@
-/home/iamme/github/NoeSI/.venv/lib/python3.12/site-packages/langgraph/checkpoint/base/__init__.py:18: LangChainPendingDeprecationWarning: The default value of `allowed_objects` will change in a future version. Pass an explicit value (e.g., allowed_objects='messages' or allowed_objects='core') to suppress this warning.
-  from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-design_id:     present80-20260808T120538-05a1dc
-status:        completed
-current_stage: gdsii
-gds_ref:       present80-20260808T120538-05a1dc.present80_top.gds@v1
-manifest:      runs/present80_e2e/manifests/present80-20260808T120538-05a1dc.json
-exports:       runs/present80_e2e/exports/present80-20260808T120538-05a1dc
