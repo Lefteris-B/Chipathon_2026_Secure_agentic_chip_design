@@ -34,7 +34,7 @@
 > sandbox**, and every decision lands in a **tamper-evident, signed** provenance chain. A
 > hijacked *or simply mistaken* agent cannot certify its own output into silicon.
 
-**Demonstration vehicle:** the **PRESENT-80** lightweight block cipher, taped through to a
+**Demonstration vehicle:** an **SPI-slave register file**, taped through to a
 real GDSII stream-out on **gf180mcuD**.
 
 ---
@@ -52,7 +52,7 @@ real GDSII stream-out on **gf180mcuD**.
   - [Quick start](#quick-start)
   - [Usage](#usage)
   - [Repository layout](#repository-layout)
-  - [Demonstration vehicle — PRESENT-80](#demonstration-vehicle--present-80)
+  - [Demonstration vehicle — SPI-slave register file](#demonstration-vehicle--spi-slave-register-file)
   - [Results (measured)](#results-measured)
   - [Roadmap](#roadmap)
   - [Team](#team)
@@ -135,7 +135,7 @@ deterministic and replayable. At SIGNOFF the run pauses for human approval, and 
 the GDSII stage streams out a real GDS via Magic inside the container.
 
 > 📐 Architecture diagrams (open in [draw.io](https://app.diagrams.net)):
-> [`noesi_overview.drawio`](./noesi_overview.drawio) · [`present80_block.drawio`](./present80_block.drawio)
+> [`noesi_overview.drawio`](./noesi_overview.drawio)
 
 ## The security model — the gate cannot lie
 
@@ -196,7 +196,7 @@ chip-agent run --spec specs/counter.md
 chip-agent chat                       # NL dialog → typed Spec
 
 # 2) Drive a spec to a real GDS on gf180mcuD
-chip-agent run   --sandbox docker --config configs/frontier-only.yaml --spec specs/present80.md
+chip-agent run   --sandbox docker --config configs/frontier-only.yaml --spec specs/spi_slave_regs.md
 chip-agent resume --design-id <design-id>          # approve the human gate → GDSII
 
 # 3) One-window operator TUI (chat · pipeline · audit · exports)
@@ -221,52 +221,74 @@ chip_agent/
   tui/                # Textual operator UI
   evals/              # VerilogEval / RTLLM harness
 configs/              # PDK / flow / model-routing configs
-specs/                # example specs (counter, present80, alu, fsm, …)
+specs/                # example specs (counter, spi_slave_regs, alu, fsm, …)
 docs/                 # architecture, features, proposal, diagrams
 tests/                # pytest suite
 ```
 
-## Demonstration vehicle — PRESENT-80
+## Demonstration vehicle — SPI-slave register file
 
-A canonical **PRESENT-80** block cipher (64-bit block, 80-bit key, 31 rounds, ISO/IEC
-29192-2), implemented as an **iterative** datapath (one round/clock) with a **bit-serial**
-7-pin interface — chosen because its published test vectors make manipulation *observable*.
+An **SPI slave** (Mode 0, CPOL=0/CPHA=0) exposing an 8-bit-addressed register file.
+Chosen because the `D10_D` padframe slot provides only **9 user pins**, and an SPI bus maps
+onto them one-for-one — so the whole chip is externally exercisable with any USB-SPI dongle:
+read `0x00`, get `0x5A`; write a scratch byte, read it back.
+
+**The padframe pin names are the organiser template's and are kept verbatim, but this design
+drives them as an SPI bus:**
+
+| `D10_D` pad | SPI role |
+|---|---|
+| `clk` | system clock — the **only** clock domain |
+| `rst_n` | asynchronous reset, active low |
+| `load_en` | **SCLK** — *sampled through a 2-FF synchroniser, never used as a clock* |
+| `shift_out_en` | **CS_n**, active low |
+| `din` | **MOSI** |
+| `dout` | **MISO** |
+| `done` | transaction complete (high after a well-formed 16-bit frame) |
+
+A frame is 16 SCLK rising edges while CS_n is low: byte 0 is `{RW, addr[6:0]}` (RW=1 writes),
+byte 1 is data. MOSI is sampled on the rising edge, MISO updated on the falling edge.
+SCLK must be driven at no more than `clk/8`.
+
+| addr | name | access | reset |
+|---|---|---|---|
+| `0x00` | `ID` | RO | `0x5A` |
+| `0x01` | `VERSION` | RO | `0x01` |
+| `0x02` | `CTRL` | RW | `0x00` |
+| `0x10`–`0x13` | `SCRATCH` | RW | `0x00` |
 
 | Parameter | Value |
 |---|---|
-| I/O pins | **7** (`clk`, `rst_n`, `load_en`, `din`, `shift_out_en`, `dout`, `done`) |
-| Clock target | 10 ns / 100 MHz |
+| User I/O pins | **9** (`VDD`, `VSS` + the 7 signals above) |
+| Clock target | 13 ns (core spec targets 10 ns) |
 | PDK / cells | gf180mcuD / `gf180mcu_fd_sc_mcu7t5v0` |
-| Std-cell instances | 3,183 (7,867 incl. fill) |
-| Die / core area | 471.4 × 489.3 µm ≈ 0.231 mm² die; 0.208 mm² core |
-| Utilization | 26.7% |
+| Core std-cell instances | **249** (0 inferred latches) |
+| `D10_D` macro instances | 7,347 including fill / decap / tap |
+| Die area | 550 × 550 µm = 0.3025 mm² (fixed by the padframe slot) |
 
 ```mermaid
 flowchart LR
-  clk([clk]) --> FSM
+  clk([clk]) --> SYNC
   rstn([rst_n]) --> FSM
-  loaden([load_en]) --> FSM
-  loaden --> SL
-  din([din]) --> SL
+  sclk([load_en = SCLK]) --> SYNC
+  csn([shift_out_en = CS_n]) --> SYNC
+  mosi([din = MOSI]) --> SYNC
 
-  FSM["Control FSM<br/>idle to load to run to done to unload"]
-  RC["round_ctr 1..31"]
-  FSM --> RC
+  SYNC["2-FF synchronisers + edge detect<br/>sclk_rise · sclk_fall · cs edges<br/>single clk domain"]
+  SYNC --> FSM
+  FSM["Frame FSM<br/>16 SCLK rising edges while CS_n low<br/>byte 0 = command · byte 1 = data"]
 
-  SL["Serial load, MSB-first<br/>shift chain key_reg + state, tail from din<br/>key 80 then plaintext 64"]
-  SL --> KEY["key_reg [79:0]<br/>80-bit key register"]
-  SL --> ST["state [63:0]<br/>64-bit block register"]
+  FSM --> SI["shift_in [7:0]<br/>MOSI sampled on rising edge"]
+  SI --> CMD["cmd = {RW, addr[6:0]}<br/>captured on 8th rising edge"]
+  CMD --> RMUX
 
-  KEY --> KS["Key schedule update<br/>rotl 61 · S-box key[79:76] · key[19:15] XOR round_ctr"]
-  KS --> KEY
-  RC --> KS
-  KEY --> ARK
+  RMUX["Read mux (combinational case)<br/>ID · VERSION · CTRL · SCRATCH0-3"]
+  REGS["Discrete registers<br/>CTRL · SCRATCH0..SCRATCH3"]
+  REGS --> RMUX
+  CMD --> WR["Write decode<br/>commits on 16th rising edge"] --> REGS
 
-  ST --> ARK["addRoundKey<br/>state XOR key_reg[79:16]"] --> SB["sBoxLayer<br/>16 x 4-bit S-box"] --> PL["pLayer<br/>64-bit permutation"] --> ST
-
-  ST --> UL["Unload shifter<br/>dout = state[63], shift left"]
-  soe([shift_out_en]) --> UL
-  UL --> dout([dout])
+  RMUX --> SO["miso_shift [7:0]<br/>updated on falling edge, MSB-first"]
+  SO --> miso([dout = MISO])
   FSM --> done([done])
 
   classDef io fill:#F5F5F5,stroke:#666,color:#111;
@@ -274,32 +296,44 @@ flowchart LR
   classDef dp fill:#DAE8FC,stroke:#6C8EBF,color:#111;
   classDef ctl fill:#FFE6CC,stroke:#D79B00,color:#111;
   classDef outp fill:#D5E8D4,stroke:#82B366,color:#111;
-  class clk,rstn,loaden,din,soe io;
-  class dout,done outp;
-  class KEY,ST reg;
-  class SL,KS,ARK,SB,PL,UL dp;
-  class FSM,RC ctl;
+  class clk,rstn,sclk,csn,mosi io;
+  class miso,done outp;
+  class REGS,SI,SO reg;
+  class RMUX,WR,CMD dp;
+  class FSM,SYNC ctl;
 ```
-
-*Editable source:* [`present80_block.drawio`](./present80_block.drawio).
 
 ## Results (measured)
 
-From a committed PRESENT-80 run driven end-to-end to a **real, valid multi-megabyte GDSII**
-(opens with the GDSII `HEADER` record):
+From the committed `spi_slave_regs_r3` run, driven end-to-end from a natural-language spec
+to a **real, valid multi-megabyte GDSII**, then rehardened as the `D10_D` padframe macro:
 
 | Metric | Value |
 |---|---|
 | Magic DRC errors | **0** |
-| Netgen LVS (device / net / pin) | **0 — LVS clean** |
-| Setup WNS / TNS — tt (25 °C, 5 V) | 0 ns / 0 ns — **closed at nominal corner** |
-| Setup WNS / TNS — ss (125 °C, 4.5 V) | −2.53 ns / −260 ns — *slow-corner gap (open)* |
-| Hold violations | 0 (all corners) |
-| Antenna violations | 0 |
-| Total power (tt) | ≈ 78 mW |
+| Netgen LVS | **0 errors — "Circuits match uniquely"**, incl. `VDD`/`VSS` |
+| Routing DRC (detailed route) | 39 → 1 → **0** over three iterations |
+| Setup violations / WNS | **0 / 0 ns** |
+| Hold violations / WNS | **0 / 0 ns** |
+| Max slew / max cap violations | **0 / 0** |
+| Antenna violations (nets / pins) | **0 / 0** |
+| Inferred latches | **0** |
+| XOR vs reference layout | **clear** |
+| Total power | ≈ 24.6 mW |
 
-**Honest status:** DRC-clean, LVS-clean, and timing-closed at the typical corner; slow-corner
-setup closure is a remaining task (see roadmap).
+Functional sign-off before physical implementation: a ground-truth SPI vector testbench
+replayed **17 transactions** with **13 checked register reads**, asserting `done` on every
+frame — so a green simulation cannot be vacuous.
+
+**Honest status:** DRC-clean, LVS-clean, and timing-closed at **all nine corners** (no
+slow-corner gap). Two caveats worth stating plainly:
+
+* **KLayout DRC did not run** — `KLAYOUT_DRC_RUNSET` is unset for gf180mcuD, so the step is
+  skipped by LibreLane. Layout DRC coverage is **Magic-only**.
+* A single `max_fanout` violation is reported at every corner. It is the CTS clock root
+  (`clkbuf_0_clk` driving 16 sinks) measured against the *data* fanout constraint of 4 used
+  during optimisation; the clock tree itself is healthy (worst hold skew ≈ −0.26 ns,
+  consistent across corners). Non-gating.
 
 ## Roadmap
 

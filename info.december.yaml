@@ -10,27 +10,41 @@
 # Project metadata (used for documentation / review)
 # ======================================================
 project:
-  title: "PRESENT-80 Lightweight Block Cipher"   # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  title: "SPI-Slave Register File"   # Project title (e.g. "Simple CPU", "PLL", "ADC")
   team: "SystemsGenesys"                       # Your Team name
   discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
-  description: "PRESENT-80 cipher core produced by a verification-gated agentic RTL-to-GDS flow (Track D)"
+  description: >-
+    SPI-slave peripheral (Mode 0) exposing an 8-bit-addressed register file,
+    produced by a verification-gated agentic RTL-to-GDS flow (Track D).
+    IMPORTANT - the padframe pin NAMES below are the organiser template's and
+    are kept verbatim, but this design drives them as an SPI bus:
+    load_en = SCLK, shift_out_en = CS_n (active low), din = MOSI,
+    dout = MISO, done = transaction-complete (high after a well-formed
+    16-bit frame). clk is the system clock and the ONLY clock domain -
+    SCLK is sampled through a 2-FF synchroniser, never used as a clock,
+    and must be driven at no more than clk/8. A frame is 16 SCLK rising
+    edges while CS_n is low: byte 0 = {RW, addr[6:0]} (RW=1 writes),
+    byte 1 = data. Registers: 0x00 ID (RO, 0x5A), 0x01 VERSION (RO, 0x01),
+    0x02 CTRL (RW), 0x10-0x13 SCRATCH (RW).
   lvs_config: "lvs_config.json"
+# Pin names are fixed by the D10_D padframe template; the SPI role of each
+# is given in brackets. See `description` above.
 pins:
   - name: VSS
     io_type: ground
   - name: VDD
     io_type: power
-  - name: clk
+  - name: clk          # system clock
     io_type: input_schmitt
-  - name: rst_n
+  - name: rst_n          # async reset, active low
     io_type: input_cmos
-  - name: din
+  - name: din          # MOSI
     io_type: input_cmos
-  - name: load_en
+  - name: load_en          # SCLK (sampled, not a clock)
     io_type: input_cmos
-  - name: shift_out_en
+  - name: shift_out_en          # CS_n, active low
     io_type: input_cmos
-  - name: dout
+  - name: dout          # MISO
     io_type: bidirectional
-  - name: done
+  - name: done          # transaction complete
     io_type: bidirectional
