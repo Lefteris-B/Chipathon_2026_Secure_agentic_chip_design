@@ -1,0 +1,44 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.netlist",
+  "version": 1,
+  "kind": "netlist",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:80f9511cd35b5830eb5e44dc47c268e8655256b8a81fabd06fa1fc038c750a7f",
+  "status": "accepted",
+  "provenance": {
+    "produced_by": "synth",
+    "agent": "synth_specialist",
+    "tool": {
+      "name": "yosys",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.rtl",
+        "version": 2,
+        "kind": "rtl",
+        "content_hash": "sha256:fa2e1ee8d54c241230c5f34cfe24d7f7008b7ca8a282756d000daba77b0f03e2"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:39:02.878686Z",
+  "metadata": {},
+  "netlist": {
+    "path": "0d/0d2744dfb8b883978674804f9425fd089c13153c8625b9986007f25772adde17",
+    "sha256": "0d2744dfb8b883978674804f9425fd089c13153c8625b9986007f25772adde17",
+    "size_bytes": 19489,
+    "media_type": "text/x-verilog"
+  },
+  "std_cell_lib": "gf180mcu_fd_sc_mcu7t5v0",
+  "cell_count": 249,
+  "area_um2": null
+}

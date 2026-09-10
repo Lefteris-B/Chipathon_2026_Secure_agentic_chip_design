@@ -1,0 +1,106 @@
+{
+  "artifact_id": "spi_slave_regs_r3.plan",
+  "version": 1,
+  "kind": "plan",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": null,
+  "content_hash": "sha256:24cf21b66ea129c14a6c11bf67d61f66ef39867a80644d9e6744d9c992891ddb",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "plan",
+    "agent": "planner",
+    "tool": null,
+    "model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "temperature": 0.0,
+      "top_p": null,
+      "seed": null,
+      "prompt_tokens": 3187,
+      "completion_tokens": 802,
+      "cost_usd": null
+    },
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:a35bf1a1d45918291bd6d754d0742913bd72e5e24295af2ffe4ee52eeabba448"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:32:39.315160Z",
+  "metadata": {},
+  "top_module_id": "mod_spi_slave_regs",
+  "modules": [
+    {
+      "module_id": "mod_spi_slave_regs",
+      "name": "spi_slave_regs",
+      "description": "Single-module SPI slave (Mode 0, 16-bit frames) with synchroniser chain, edge detection, register map (ID/VERSION/CTRL/SCRATCH0-3), MSB-first MISO/MOSI handling, and done flag logic; all in one flat Verilog-2005/2012 module.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "in",
+          "width": 1,
+          "description": "Free-running system clock, 100 MHz target"
+        },
+        {
+          "name": "rst_n",
+          "direction": "in",
+          "width": 1,
+          "description": "Asynchronous active-low reset, released synchronously"
+        },
+        {
+          "name": "sclk",
+          "direction": "in",
+          "width": 1,
+          "description": "SPI serial clock from master, sampled input only"
+        },
+        {
+          "name": "cs_n",
+          "direction": "in",
+          "width": 1,
+          "description": "SPI chip select, active low, sampled input"
+        },
+        {
+          "name": "mosi",
+          "direction": "in",
+          "width": 1,
+          "description": "SPI serial data in, MSB-first, sampled on rising sclk"
+        },
+        {
+          "name": "miso",
+          "direction": "out",
+          "width": 1,
+          "description": "SPI serial data out, MSB-first, updated on falling sclk; 0 when cs_n high"
+        },
+        {
+          "name": "done",
+          "direction": "out",
+          "width": 1,
+          "description": "Level signal asserted on 16th sclk rising edge of a well-formed frame"
+        }
+      ],
+      "params": {
+        "ADDR_CTRL": "7'h02",
+        "ADDR_ID": "7'h00",
+        "ADDR_SCR0": "7'h10",
+        "ADDR_SCR1": "7'h11",
+        "ADDR_SCR2": "7'h12",
+        "ADDR_SCR3": "7'h13",
+        "ADDR_VER": "7'h01",
+        "CLK_PERIOD_NS": 10,
+        "ID_VAL": "8'h5A",
+        "VERSION_VAL": "8'h01"
+      },
+      "depends_on": []
+    }
+  ],
+  "rationale": "The spec mandates a single flat Verilog-2005/2012 module with no sub-modules, no functions, no RAM arrays, and no part-selects on expressions. All logic — 3-stage synchronisers for sclk/cs_n/mosi, edge detection, frame-active flag, 4-bit bit counter, byte-phase register, command shift register, data shift register, read mux (combinational always @* with case), write enables (explicit case on address), CTRL and SCRATCH0-3 registers, MISO output register, and done flag — is implemented inside the single module spi_slave_regs. The dependency list is therefore empty."
+}

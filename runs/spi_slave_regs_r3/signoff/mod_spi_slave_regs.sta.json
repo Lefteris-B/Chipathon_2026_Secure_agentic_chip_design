@@ -1,0 +1,57 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.timing",
+  "version": 1,
+  "kind": "sta",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:d64fcbc1acb51698cbf467ca475d3741aafd56f3e6efcca6e20a64d816d4ff63",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": "signoff_specialist",
+    "tool": {
+      "name": "opensta",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.netlist",
+        "version": 1,
+        "kind": "netlist",
+        "content_hash": "sha256:80f9511cd35b5830eb5e44dc47c268e8655256b8a81fabd06fa1fc038c750a7f"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:40:48.559565Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "opensta",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "errors": 0.0,
+    "hold_violations": 0.0,
+    "sdf_used": 1.0,
+    "setup_violations": 0.0,
+    "tns_ns": 0.0,
+    "used_mapped_netlist": 1.0,
+    "violations": 0.0,
+    "wns_ns": 0.0
+  },
+  "violations": [],
+  "wns_ns": null,
+  "tns_ns": null,
+  "setup_violations": 0,
+  "hold_violations": 0,
+  "gate_ok": true
+}

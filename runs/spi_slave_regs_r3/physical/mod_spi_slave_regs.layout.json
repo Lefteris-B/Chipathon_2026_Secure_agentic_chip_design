@@ -1,0 +1,99 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.layout",
+  "version": 1,
+  "kind": "layout",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:672f3e14e451e1d6cfc688b8f901b5226a14288ff29c8f3508b09b30122eeebb",
+  "status": "accepted",
+  "provenance": {
+    "produced_by": "physical",
+    "agent": "physical_specialist",
+    "tool": {
+      "name": "librelane",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.netlist",
+        "version": 1,
+        "kind": "netlist",
+        "content_hash": "sha256:80f9511cd35b5830eb5e44dc47c268e8655256b8a81fabd06fa1fc038c750a7f"
+      }
+    ],
+    "config_hash": null,
+    "config": {
+      "clock_period_ns": 10.0,
+      "pdk": "gf180mcuD",
+      "std_cell_lib": "gf180mcu_fd_sc_mcu7t5v0",
+      "target_utilization": 0.2
+    },
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:40:47.602090Z",
+  "metadata": {
+    "congestion_pct": 0.0,
+    "multi_corner_fallback": "false",
+    "stage_reached": "routed"
+  },
+  "def_file": {
+    "path": "9d/9d059d81900e4e9e90fc0524dfe513710a7fb11e63e6d6bd0cf7fe7c768b948b",
+    "sha256": "9d059d81900e4e9e90fc0524dfe513710a7fb11e63e6d6bd0cf7fe7c768b948b",
+    "size_bytes": 502681,
+    "media_type": "text/x-def"
+  },
+  "stage_reached": "routed",
+  "die_area_um2": 60748.5,
+  "utilization_pct": 28.657899999999998,
+  "cell_count": 2220,
+  "congestion_pct": 0.0,
+  "librelane_sdf": {
+    "path": "c8/c8c1da76a63e4a89da808c4884cef3bea87f79daca445e09174c49573480ea60",
+    "sha256": "c8c1da76a63e4a89da808c4884cef3bea87f79daca445e09174c49573480ea60",
+    "size_bytes": 267709,
+    "media_type": "text/x-sdf"
+  },
+  "librelane_drc_report": {
+    "path": "4b/4b6029533534a0be4b7e4dde4e559e29012378d04f3d202a56fabae6b109b97c",
+    "sha256": "4b6029533534a0be4b7e4dde4e559e29012378d04f3d202a56fabae6b109b97c",
+    "size_bytes": 3291,
+    "media_type": "text/plain"
+  },
+  "librelane_layout_spice": {
+    "path": "3f/3f22f4204db13b605c80927f1d4ee37504401b881ea74e45265b2019ebf2fd0c",
+    "sha256": "3f22f4204db13b605c80927f1d4ee37504401b881ea74e45265b2019ebf2fd0c",
+    "size_bytes": 158134,
+    "media_type": "text/x-spice"
+  },
+  "librelane_mapped_netlist": {
+    "path": "58/585d5e6c5d06997405b366764b55fdac9d3248fcb18bc021c0368a7b83a370b6",
+    "sha256": "585d5e6c5d06997405b366764b55fdac9d3248fcb18bc021c0368a7b83a370b6",
+    "size_bytes": 144017,
+    "media_type": "text/x-verilog"
+  },
+  "librelane_powered_netlist": {
+    "path": "1a/1ae1ec183132c41102602867872d380dc37f38570574c46f754982d2d084d2a9",
+    "sha256": "1ae1ec183132c41102602867872d380dc37f38570574c46f754982d2d084d2a9",
+    "size_bytes": 252965,
+    "media_type": "text/x-verilog"
+  },
+  "librelane_per_corner_timing": null,
+  "librelane_per_corner_power": null,
+  "librelane_reports": {
+    "path": "16/169af87a5b13c3a048f794b00af6352d2546fc8e8814b351c968938f1013a2b1",
+    "sha256": "169af87a5b13c3a048f794b00af6352d2546fc8e8814b351c968938f1013a2b1",
+    "size_bytes": 1865735,
+    "media_type": "application/gzip"
+  },
+  "librelane_log": {
+    "path": "30/30bee67937aa1c4de43d79357b514c9ff40473936bd336f56bc0cea985109b75",
+    "sha256": "30bee67937aa1c4de43d79357b514c9ff40473936bd336f56bc0cea985109b75",
+    "size_bytes": 795014,
+    "media_type": "text/plain"
+  }
+}

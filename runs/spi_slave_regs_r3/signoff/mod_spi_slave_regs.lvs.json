@@ -1,0 +1,63 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.lvs",
+  "version": 1,
+  "kind": "lvs",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:a5e29e0109ffaa1609d796b776aa1ae9260715e56fa5ea2c8f1dd9ee15a71c51",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": "signoff_specialist",
+    "tool": {
+      "name": "netgen",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.netlist",
+        "version": 1,
+        "kind": "netlist",
+        "content_hash": "sha256:80f9511cd35b5830eb5e44dc47c268e8655256b8a81fabd06fa1fc038c750a7f"
+      },
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.layout",
+        "version": 1,
+        "kind": "layout",
+        "content_hash": "sha256:672f3e14e451e1d6cfc688b8f901b5226a14288ff29c8f3508b09b30122eeebb"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:40:49.827267Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "netgen",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "errors": 0.0,
+    "lvs_mismatches": 0.0,
+    "matched": 1.0,
+    "violations": 0.0
+  },
+  "violations": [],
+  "matched": true,
+  "mismatch_count": 0,
+  "netgen_log": {
+    "path": "04/047d3a7e3fbbbc8862d015e394490f7715d342e01516d14f4ccec8a735f64396",
+    "sha256": "047d3a7e3fbbbc8862d015e394490f7715d342e01516d14f4ccec8a735f64396",
+    "size_bytes": 97314,
+    "media_type": "text/plain"
+  },
+  "gate_ok": true
+}

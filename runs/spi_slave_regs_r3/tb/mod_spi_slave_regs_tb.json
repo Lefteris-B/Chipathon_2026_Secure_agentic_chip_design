@@ -1,0 +1,53 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.tb",
+  "version": 1,
+  "kind": "testbench",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:1632b38010bf3d2e2f8d28c8566f6492750bc568ca24406570fbb32894da6567",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "rtl",
+    "agent": "spi_vector_tb_builder",
+    "tool": {
+      "name": "spi_vector_tb",
+      "version": "f-spivectb.1",
+      "container_digest": null
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.spec",
+        "version": 1,
+        "kind": "spec",
+        "content_hash": "sha256:a35bf1a1d45918291bd6d754d0742913bd72e5e24295af2ffe4ee52eeabba448"
+      },
+      {
+        "artifact_id": "spi_slave_regs_r3.plan",
+        "version": 1,
+        "kind": "plan",
+        "content_hash": "sha256:24cf21b66ea129c14a6c11bf67d61f66ef39867a80644d9e6744d9c992891ddb"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:37:50.558869Z",
+  "metadata": {
+    "checked_reads": "13",
+    "protocol": "spi_mode0",
+    "transaction_count": "17"
+  },
+  "source": {
+    "path": "83/832448139a1150e62af6adc3961e2e59844d218d4ad95ebc2386400f7020bcc9",
+    "sha256": "832448139a1150e62af6adc3961e2e59844d218d4ad95ebc2386400f7020bcc9",
+    "size_bytes": 3253,
+    "media_type": "text/x-python"
+  },
+  "framework": "cocotb",
+  "target_module": "spi_slave_regs"
+}

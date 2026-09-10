@@ -1,0 +1,33 @@
+{
+  "artifact_id": "spi_slave_regs_r3.spi_slave_regs.security",
+  "version": 1,
+  "kind": "security",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "spi_slave_regs",
+  "content_hash": "sha256:a12003400f790c81d7d437f1c23f70877e940c4fc6f11df16a8850199a4a539b",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "signoff",
+    "agent": null,
+    "tool": null,
+    "model": null,
+    "inputs": [],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:32:39.333425Z",
+  "metadata": {},
+  "passed": true,
+  "checker": null,
+  "metrics": {
+    "errors": 0.0
+  },
+  "violations": [],
+  "checks_run": [],
+  "suspicious_structures": 0,
+  "gate_ok": true
+}

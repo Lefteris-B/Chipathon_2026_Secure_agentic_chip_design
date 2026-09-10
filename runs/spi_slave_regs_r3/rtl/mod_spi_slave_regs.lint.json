@@ -1,0 +1,49 @@
+{
+  "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.synth_check",
+  "version": 1,
+  "kind": "lint",
+  "design_id": "spi_slave_regs_r3",
+  "module_id": "mod_spi_slave_regs",
+  "content_hash": "sha256:1c2faadbefbced654198db544472467474d5c97a36bf0d981d5ed4aa6f770ac7",
+  "status": "draft",
+  "provenance": {
+    "produced_by": "rtl",
+    "agent": "rtl_specialist",
+    "tool": {
+      "name": "yosys-strict-elaborate",
+      "version": "bundled",
+      "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+    },
+    "model": null,
+    "inputs": [
+      {
+        "artifact_id": "spi_slave_regs_r3.mod_spi_slave_regs.rtl",
+        "version": 1,
+        "kind": "rtl",
+        "content_hash": "sha256:26667e6d84b00b65e038407beade80fddd252d798e43a8cc0c0a46c4de1fbc94"
+      }
+    ],
+    "config_hash": null,
+    "config": {},
+    "seed": null,
+    "started_at": null,
+    "ended_at": null,
+    "notes": null
+  },
+  "created_at": "2026-09-10T15:38:14.298374Z",
+  "metadata": {},
+  "passed": true,
+  "checker": {
+    "name": "yosys-strict-elaborate",
+    "version": "bundled",
+    "container_digest": "sha256:b3a754709b6d71bf11ce9357c07d2d63b6a4562c2a36b20c1dde33dd0079a9b4"
+  },
+  "metrics": {
+    "hard_errors": 0.0,
+    "no_driver_bits": 0.0,
+    "no_driver_wires": 0.0,
+    "synth_check_problems": 0.0
+  },
+  "violations": [],
+  "gate_ok": true
+}
