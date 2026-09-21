@@ -346,11 +346,11 @@ slow-corner gap). Two caveats worth stating plainly:
 
 **SystemsGenesys** — IEEE SSCS PICO Open-Source Chipathon 2026, Track D.
 
-| Name | Role |
+| Name | Affiliation |
 |---|---|
-| _[Eleftherios Batzolis]_ | 
-| _[Dr. Konstantinos Rantos]_ | 
-| _[Dr. Drosatos Georgios]_ | 
+| _[Eleftherios Batzolis]_ | Democritus Univercity of Thrace , Institute of Language and Speech Processing (ILSP)
+| _[Dr. Konstantinos Rantos]_ | Democritus Univercity of Thrace
+| _[Dr. Drosatos Georgios]_ | Institute of Language and Speech Processing (ILSP)
 
 _Template placeholders — replace with the team's real names and contacts._
 
