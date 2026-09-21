@@ -348,11 +348,11 @@ slow-corner gap). Two caveats worth stating plainly:
 
 | Name | Affiliation |
 |---|---|
-| _[Eleftherios Batzolis]_ | Democritus Univercity of Thrace , Institute of Language and Speech Processing (ILSP)
-| _[Dr. Konstantinos Rantos]_ | Democritus Univercity of Thrace
-| _[Dr. Drosatos Georgios]_ | Institute of Language and Speech Processing (ILSP)
+| _Eleftherios Batzolis_ | Democritus Univercity of Thrace , Institute of Language and Speech Processing (ILSP)
+| _Dr. Konstantinos Rantos_ | Democritus Univercity of Thrace
+| _Dr. Drosatos Georgios_ | Institute of Language and Speech Processing (ILSP)
 
-_Template placeholders — replace with the team's real names and contacts._
+
 
 ## License & acknowledgements
 
