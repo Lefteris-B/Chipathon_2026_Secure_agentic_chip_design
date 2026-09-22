@@ -1,0 +1,99 @@
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+# Chipathon 2026: Project configuration
+# LICENSE: Apache License Version 2.0
+# http://www.apache.org/licenses/
+# ----- ------ ----- ----- ------ ----- ----- ------ -----
+
+# data will be pulled from main branch of the repo.
+# please be sure that the main branch contains the data you want to submit.
+# This file will be updated with more information later
+
+# ======================================================
+# Project metadata (used for documentation / review)
+# ======================================================
+project:
+  title: "SPI-Slave Register File"   # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  team: "SystemsGenesys"             # Your Team name
+  discord: "E. Batzolis"             # Optional: Discord username (for support / communication)
+  description: >-
+    SPI-slave peripheral (Mode 0) exposing an 8-bit-addressed register file,
+    produced by a verification-gated agentic RTL-to-GDS flow (Track D).
+    IMPORTANT - the padframe pin NAMES below are the organiser template's and
+    are kept verbatim, but this design drives them as an SPI bus:
+    load_en = SCLK, shift_out_en = CS_n (active low), din = MOSI,
+    dout = MISO, done = transaction-complete (high after a well-formed
+    16-bit frame). clk is the system clock and the ONLY clock domain -
+    SCLK is sampled through a 2-FF synchroniser, never used as a clock,
+    and must be driven at no more than clk/8. A frame is 16 SCLK rising
+    edges while CS_n is low: byte 0 = {RW, addr[6:0]} (RW=1 writes),
+    byte 1 = data. Registers: 0x00 ID (RO, 0x5A), 0x01 VERSION (RO, 0x01),
+    0x02 CTRL (RW), 0x10-0x13 SCRATCH (RW).
+  lvs_config: "lvs_config.json"
+  gf_def_ready: true      # data ready for def generation with global foundries' pad frame
+  ws_def_ready: false     # data ready for def generation with wafer space pad frame
+  drc_ready: true         # data ready for integration and DRC
+  lvs_ready: true         # data ready for integrated LVS
+
+# There are 7 i/o pin types and the associated connections from the user area to the i/o pad cell
+# all control signals must be connected
+# ground: 
+#   <name> connects to DVSS
+# power: 
+#   <name> connects to DVDD
+# input_cmos: digital input with no hysteresis
+#   <name> connects to Y
+#   control pins:
+#     <name_PD>: connects to PD. weak pull down when enabled
+#     <name_PU>: connects to PU. weak pull up when enabled
+# input_schmitt: digital input with hysteresis
+#   <name> connects to Y
+#   control pins:
+#     <name_PD>: connects to PD. weak pull down when enabled
+#     <name_PU>: connects to PU. weak pull up when enabled
+# bidirectional: programmable drive strength PDRV[1:0] - 00: 4mA, 01: 8mA, 10: 12mA, 11: 16mA
+#   <name>_IN connects to Y
+#   <name>_OUT connects to A
+#   control pins:
+#     <name_PD>: connects to PD. weak pull down when enabled
+#     <name_PU>: connects to PU. weak pull up when enabled
+#     <name_CS>: input type - low is cmos buffer, high is schmitt trigger
+#     <name_SL>: output slew rate - low is fast, high is slow
+#     <name_IE>: input enable - high for input PAD -> Y
+#     <name_OE>: output enable - high for output A -> PAD
+#     <name_PDRV0>: drive strength lsb
+#     <name_PDRV1>: drive strength msb
+# bidirectional_24ma: fixed drive strength 24mA
+#   <name>_IN connects to Y
+#   <name>_OUT connects to A
+#   control pins:
+#     <name_PD>: connects to PD. weak pull down when enabled
+#     <name_PU>: connects to PU. weak pull up when enabled
+#     <name_CS>: input type - low is cmos buffer, high is schmitt trigger
+#     <name_SL>: output slew rate - low is fast, high is slow
+#     <name_IE>: input enable - high for input PAD -> Y
+#     <name_OE>: output enable - high for output A -> PAD
+# analog:
+#   <name> connects to ASIG5V
+#   Note: secondary_esd flag is ignored
+
+# Pin names are fixed by the D10_D padframe template; the SPI role of each
+# is given in the comments. See `description` above.
+pins: 
+  - name: VSS
+    io_type: ground  # the first pin must be a ground connection
+  - name: VDD
+    io_type: power  # subsequent power/ground cells cause a break in the I/O power rails
+  - name: clk            # system clock
+    io_type: input_schmitt
+  - name: rst_n          # async reset, active low
+    io_type: input_cmos
+  - name: din            # MOSI
+    io_type: input_cmos
+  - name: load_en        # SCLK (sampled, not a clock)
+    io_type: input_cmos
+  - name: shift_out_en   # CS_n, active low
+    io_type: input_cmos
+  - name: dout           # MISO
+    io_type: bidirectional
+  - name: done           # transaction complete
+    io_type: bidirectional
