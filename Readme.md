@@ -54,6 +54,7 @@ real GDSII stream-out on **gf180mcuD**.
   - [Repository layout](#repository-layout)
   - [Demonstration vehicle — SPI-slave register file](#demonstration-vehicle--spi-slave-register-file)
   - [Results (measured)](#results-measured)
+  - [Reproduction and silicon test plan](#reproduction-and-silicon-test-plan)
   - [Roadmap](#roadmap)
   - [Team](#team)
   - [License \& acknowledgements](#license--acknowledgements)
@@ -223,7 +224,10 @@ chip_agent/
 configs/              # PDK / flow / model-routing configs
 specs/                # example specs (counter, spi_slave_regs, alu, fsm, …)
 docs/                 # architecture, features, proposal, diagrams
-tests/                # pytest suite
+  TEST_PLAN.md        # silicon bring-up / characterization test plan
+repro/                # standalone LibreLane reproduction of gds/D10_D.gds (+ PDN write-up)
+connectors/           # VSS/VDD power-bridge cells embedded in D10_D (+ build scripts)
+tests/                # pytest suite (flow + gate tests, pre-silicon)
 ```
 
 ## Demonstration vehicle — SPI-slave register file
@@ -334,6 +338,23 @@ slow-corner gap). Two caveats worth stating plainly:
   (`clkbuf_0_clk` driving 16 sinks) measured against the *data* fanout constraint of 4 used
   during optimisation; the clock tree itself is healthy (worst hold skew ≈ −0.26 ns,
   consistent across corners). Non-gating.
+
+## Reproduction and silicon test plan
+
+- **Reproduce the macro:** [`repro/README.md`](repro/README.md). `repro/D10_D/run.sh`
+  regenerates `gds/D10_D.gds` with plain LibreLane in the pinned
+  `hpretl/iic-osic-tools:chipathon26` image, offline. Inputs are the exact RTL, the
+  organizer DEF template, and the custom PDN config. A re-run reproduces the power grid
+  and pins byte-for-byte, with all signoff checks clean.
+- **PDN:** [`repro/README.md#pdn`](repro/README.md#pdn) explains how the padframe's
+  Metal2 VSS/VDD reaches the Metal4/5 core grid through the
+  [`connectors/`](connectors/README.md) bridge cells, and how to check it
+  (`PSM-0040` both nets, 0 power-grid violations, IR drop 0.40 mV worst).
+- **Silicon test plan:** [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) covers bench setup,
+  power-up/DC, reset, identity, functional and framing tests, frequency/ratio/VDD/temperature
+  sweeps, soak, and the results table that gets filled in when packaged parts arrive.
+  The pytest suite in `tests/` is pre-silicon (flow and gate) testing. The test plan
+  covers the chip itself.
 
 ## Roadmap
 
