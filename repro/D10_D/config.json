@@ -9,7 +9,7 @@
 
   "FP_DEF_TEMPLATE": "dir::D10_D.def",
   "FP_SIZING": "absolute",
-  "DIE_AREA": [0, 0, 550, 550],
+  "DIE_AREA": [0, 0, 605, 605],
   "FP_CORE_UTIL": 30,
 
   "PL_RESIZER_SETUP_SLACK_MARGIN": 4,
@@ -21,12 +21,12 @@
     "vss_conn": {
       "gds": ["dir::../../connectors/gds/vss_conn.gds"],
       "lef": ["dir::../../connectors/lef/vss_conn.lef"],
-      "instances": { "vss_conn_0": { "location": [0.0, 46.36], "orientation": "N" } }
+      "instances": { "vss_conn_0": { "location": [0.0, 15.68], "orientation": "N" } }
     },
     "vdd_conn": {
       "gds": ["dir::../../connectors/gds/vdd_conn.gds"],
       "lef": ["dir::../../connectors/lef/vdd_conn.lef"],
-      "instances": { "vdd_conn_0": { "location": [0.0, 146.36], "orientation": "N" } }
+      "instances": { "vdd_conn_0": { "location": [0.0, 101.36], "orientation": "N" } }
     }
   },
   "PDN_CFG": "dir::no_macro_pdn.tcl",

@@ -6,8 +6,12 @@ Via size 0.26 um; pitch Via2=0.62, Via3=0.71, Via4=0.71 um.
 
 Each cell's Metal2 replicates the template's 6-rect column (relative to the
 cell origin) but EXTENDED east to WIDTH um so a via array fits; the west edge
-(x=0) stays for pad abutment. Placed later at (0, y_min): VSS (0,46.36),
-VDD (0,146.36).
+(x=0) stays for pad abutment. Placed later at (0, y_min): VSS (0,15.68),
+VDD (0,101.36).
+
+VSS covers 5 of the template's 6 rects: a macro below the core fails LibreLane's
+detailed-placement check (DPL-0033), and the core starts at y=15.68. So the
+(1.36, 10.86) rect is dropped and the (13.76, 24.01) rect is clipped to the core.
 """
 import pya
 
@@ -23,10 +27,10 @@ LYR = {"Metal2": (36, 0), "Via2": (38, 0), "Metal3": (42, 0),
 
 # template Metal2 rects (um), x[0,1], per net -> we take (y1,y2) bands
 BANDS = {
-    "vss_conn": [(109.14, 118.64), (95.99, 106.24), (84.14, 94.39),
-                 (70.61, 80.86), (58.76, 69.01), (46.36, 55.86)],
-    "vdd_conn": [(209.14, 218.64), (195.99, 206.24), (184.14, 194.39),
-                 (170.61, 180.86), (158.76, 169.01), (146.36, 155.86)],
+    "vss_conn": [(64.14, 73.64), (50.99, 61.24), (39.14, 49.39),
+                 (25.61, 35.86), (15.68, 24.01)],
+    "vdd_conn": [(164.14, 173.64), (150.99, 161.24), (139.14, 149.39),
+                 (125.61, 135.86), (113.76, 124.01), (101.36, 110.86)],
 }
 
 
