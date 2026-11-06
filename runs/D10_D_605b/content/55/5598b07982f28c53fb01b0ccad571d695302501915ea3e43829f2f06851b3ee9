@@ -19,62 +19,60 @@ Loading "/usr/local/lib/python3.12/dist-packages/librelane/scripts/magic/wrapper
 Warning: Calma reading is not undoable!  I hope that's OK.
 Library written using GDS-II Release 3.0
 Library name: D10_D
+Reading "vss_conn".
 Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_32".
 Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_64".
 Reading "gf180mcu_fd_sc_mcu7t5v0__endcap".
 Reading "gf180mcu_fd_sc_mcu7t5v0__filltie".
 Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_4".
-Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_8".
 Reading "gf180mcu_fd_sc_mcu7t5v0__fill_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_8".
 Reading "gf180mcu_fd_sc_mcu7t5v0__fill_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_16".
-Reading "vss_conn".
 Reading "vdd_conn".
-Reading "gf180mcu_fd_sc_mcu7t5v0__dffrnq_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__tiel".
+Reading "gf180mcu_fd_sc_mcu7t5v0__fillcap_16".
 Reading "gf180mcu_fd_sc_mcu7t5v0__dlyb_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__mux2_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16".
+Reading "gf180mcu_fd_sc_mcu7t5v0__dffrnq_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__dlya_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__buf_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__mux2_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__buf_3".
+Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nor3_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__clkinv_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__buf_4".
-Reading "gf180mcu_fd_sc_mcu7t5v0__tiel".
-Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_8".
-Reading "gf180mcu_fd_sc_mcu7t5v0__oai32_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__oai21_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nor2_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__aoi21_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nor4_2".
 Reading "gf180mcu_fd_sc_mcu7t5v0__nand4_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__and4_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_8".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nand3_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__oai31_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__and2_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor4_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__nand2_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__oai31_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor2_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor4_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__buf_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor3_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor4_4".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nand3_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__oai32_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__and4_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nor4_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__oai21_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__oai211_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nand2_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__aoi21_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__oai22_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__buf_3".
 Reading "gf180mcu_fd_sc_mcu7t5v0__nand4_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__dlyc_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nand4_4".
-Reading "gf180mcu_fd_sc_mcu7t5v0__aoi22_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__xor2_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__and2_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__nor3_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nand2_2".
 Reading "gf180mcu_fd_sc_mcu7t5v0__oai32_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__or2_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__or3_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__and3_1".
-Reading "gf180mcu_fd_sc_mcu7t5v0__or3_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__oai22_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__dlyc_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__buf_4".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nand4_4".
+Reading "gf180mcu_fd_sc_mcu7t5v0__and4_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__buf_8".
+Reading "gf180mcu_fd_sc_mcu7t5v0__clkbuf_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__aoi22_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__nor3_4".
-Reading "gf180mcu_fd_sc_mcu7t5v0__dffrnq_2".
-Reading "gf180mcu_fd_sc_mcu7t5v0__dffsnq_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__or3_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__or3_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__and3_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__or2_1".
+Reading "gf180mcu_fd_sc_mcu7t5v0__nor3_2".
+Reading "gf180mcu_fd_sc_mcu7t5v0__xor2_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__xor2_2".
 Reading "gf180mcu_fd_sc_mcu7t5v0__dffsnq_1".
 Reading "gf180mcu_fd_sc_mcu7t5v0__tieh".
@@ -87,6 +85,6 @@ Loading DRC CIF style.
 No errors found.
 [INFO] COUNT: 0
 [INFO] Should be divided by 3 or 4
-[INFO] DRC Checking DONE (/work/runs/run_latest/63-magic-drc/reports/drc.magic.rpt)
-[INFO] Saving mag view with DRC errors (/work/runs/run_latest/63-magic-drc/views/D10_D.drc.mag)
+[INFO] DRC Checking DONE (/work/runs/run_latest/64-magic-drc/reports/drc.magic.rpt)
+[INFO] Saving mag view with DRC errors (/work/runs/run_latest/64-magic-drc/views/D10_D.drc.mag)
 [INFO] Saved

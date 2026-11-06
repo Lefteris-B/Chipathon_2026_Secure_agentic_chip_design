@@ -27,15 +27,19 @@ drives them as an SPI bus:
 
 | Pad slot | Template name | Pad cell | Role | Dir |
 |---|---|---|---|---|
-| W18 | `VSS` | `dvss` | core ground | — |
-| W19 | `VDD` | `dvdd` | core supply, 5.0 V nominal | — |
-| W20 | `clk` | `in_s` (Schmitt) | system clock (the only clock domain) | in |
-| W21 | `rst_n` | `in_c` | async reset, active low | in |
-| W22 | `din` | `in_c` | MOSI | in |
-| N01 | `load_en` | `in_c` | SCLK (sampled, **not** a clock) | in |
-| N02 | `shift_out_en` | `in_c` | CS_n, active low | in |
-| N03 | `dout` | `bi_t`, output-only | MISO | out |
-| N04 | `done` | `bi_t`, output-only | transaction complete (level) | out |
+| W17 | `VSS` | `dvss` | core ground | — |
+| W18 | `VDD` | `dvdd` | core supply, 5.0 V nominal | — |
+| W19 | `clk` | `in_s` (Schmitt) | system clock (the only clock domain) | in |
+| W20 | `rst_n` | `in_c` | async reset, active low | in |
+| W21 | `din` | `in_c` | MOSI | in |
+| W22 | `load_en` | `in_c` | SCLK (sampled, **not** a clock) | in |
+| N01 | `shift_out_en` | `in_c` | CS_n, active low | in |
+| N02 | `dout` | `bi_t`, output-only | MISO | out |
+| N03 | `done` | `bi_t`, output-only | transaction complete (level) | out |
+
+Slots are the template's base orientation. The organizers' 2026-11-06 floorplan places
+D10 on Chip 8 mirrored in X and Y, which would put these pads on the east and south
+sides of the die. Confirm the final pad locations before designing the board.
 
 ### 0.2 Board requirements
 

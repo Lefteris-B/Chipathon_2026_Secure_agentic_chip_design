@@ -267,8 +267,8 @@ SCLK must be driven at no more than `clk/8`.
 | Clock target | 13 ns (core spec targets 10 ns) |
 | PDK / cells | gf180mcuD / `gf180mcu_fd_sc_mcu7t5v0` |
 | Core std-cell instances | **249** (0 inferred latches) |
-| `D10_D` macro instances | 7,347 including fill / decap / tap |
-| Die area | 550 × 550 µm = 0.3025 mm² (fixed by the padframe slot) |
+| `D10_D` macro instances | 8,580 including fill / decap / tap |
+| Die area | 605 × 605 µm = 0.366 mm² (fixed by the padframe slot) |
 
 ```mermaid
 flowchart LR

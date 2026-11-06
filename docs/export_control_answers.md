@@ -26,7 +26,7 @@ Open-Source Chipathon 2026, Track D. Facts drawn from `info.yaml`, `Readme.md`,
 
 **1 a)** Digital CMOS ASIC: an SPI-slave peripheral (Mode 0, CPOL=0/CPHA=0) exposing an
 8-bit-addressed register file of seven registers (ID, VERSION, CTRL, four scratch bytes).
-249 standard-cell instances on gf180mcuD, 550 × 550 µm die in a fixed multi-project
+249 standard-cell instances on gf180mcuD, 605 × 605 µm die in a fixed multi-project
 padframe slot, 9 user I/O. **Final end use: education and research only** — a
 non-commercial university-shuttle demonstration vehicle for an open-source agentic
 RTL-to-GDSII design flow. Returned die are exercised on a lab bench with a USB-SPI dongle
@@ -38,7 +38,7 @@ demonstrating that the design flow produced working silicon.
 - (i) Peak saturated power output: **N/A** — digital logic only; no RF, no amplifier, no power output stage.
 - (ii) Operating frequency: **≤ 76.9 MHz** (13 ns clock period, the closed timing target; core spec targets 10 ns / 100 MHz).
 - (iii) Fractional bandwidth: **N/A** — baseband digital device, not a bandwidth-defined RF part.
-- (iv) Planar side length: **0.55 mm** (550 µm × 550 µm die, fixed by the padframe slot).
+- (iv) Planar side length: **0.605 mm** (605 µm × 605 µm die, fixed by the padframe slot).
 
 **1 c)** mmWave product? **No.** Sub-items (i)–(iv) are therefore N/A:
 - (i) No graph — no RF power output or S21 to plot.
