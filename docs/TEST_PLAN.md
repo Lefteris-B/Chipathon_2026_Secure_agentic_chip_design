@@ -100,12 +100,12 @@ From the RTL (`spi_slave_regs` in `repro/D10_D/D10_D.v`):
 | ID | Check | Status / result |
 |---|---|---|
 | T1.1 | RTL vector sim: spec register vectors + framing tests | **done**: 17 transactions / 13 checked reads, `done` asserted on every frame (run `spi_slave_regs_r3`) |
-| T1.2 | Signoff of the shipped macro, 9 corners | **done**: Magic DRC 0 (KLayout DRC is skipped by LibreLane for gf180mcuD), LVS 0, antenna 0, XOR 0, max-slew/cap 0, setup WS +2.80 ns / hold WS +0.19 ns (worst corner), PDN unconnected-shape count 0, IR drop worst 0.40 mV in the re-run (see [`repro/README.md`](../repro/README.md#pdn)) |
-| T1.3 | Gate-level sim of `verilog/gl/D10_D.pnl.v` with SDF at ss / tt / ff, same vector set as T1.1, at f_SCLK = f_clk/8 and f_clk/16 | planned before parts arrive |
+| T1.2 | Signoff of the shipped macro, 9 corners | **done**: Magic DRC 0 (KLayout DRC is skipped by LibreLane for gf180mcuD), LVS 0, antenna 0, XOR 0, max-slew/cap 0, setup WS +2.32 ns / hold WS +0.20 ns (worst corner), PDN unconnected-shape count 0, IR drop worst 0.59 mV (see [`repro/README.md`](../repro/README.md#pdn)) |
+| T1.3 | Gate-level sim of `verilog/gl/D10_D.pnl.v` with SDF at ss / tt / ff, same vector set as T1.1, at f_SCLK = f_clk/8 and f_clk/16 | **done**: all pass at ss / tt / ff and zero-delay, 13 ns clock; injected faults fail as they should. Setup/hold rest on signoff STA and pad delays are excluded ([`test/gl/`](../test/gl/README.md)) |
 | T1.4 | Over-long-frame behavior in sim (see §5 note) | planned. Its result becomes the expected value for T5.4/T5.5 |
 
-From the signoff STA (core only, pads excluded): critical path ≈ 10.2 ns at
-the slow corner, ≈ 6.5 ns at typical. These figures predict f_clk(max) for T6.1.
+From the signoff STA (core only, pads excluded): critical path ≈ 10.7 ns at
+the slow corner, ≈ 6.4 ns at typical. These figures predict f_clk(max) for T6.1.
 
 ------------------------------------------------------------------------
 

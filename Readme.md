@@ -349,7 +349,7 @@ slow-corner gap). Two caveats worth stating plainly:
 - **PDN:** [`repro/README.md#pdn`](repro/README.md#pdn) explains how the padframe's
   Metal2 VSS/VDD reaches the Metal4/5 core grid through the
   [`connectors/`](connectors/README.md) bridge cells, and how to check it
-  (`PSM-0040` both nets, 0 power-grid violations, IR drop 0.40 mV worst).
+  (`PSM-0040` both nets, 0 power-grid violations, IR drop 0.59 mV worst).
 - **Silicon test plan:** [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) covers bench setup,
   power-up/DC, reset, identity, functional and framing tests, frequency/ratio/VDD/temperature
   sweeps, soak, and the results table that gets filled in when packaged parts arrive.
